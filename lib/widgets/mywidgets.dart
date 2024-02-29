@@ -8,11 +8,13 @@ class MyCard extends StatefulWidget {
       {super.key,
       required this.exerciseName,
       required this.questionCompleted,
-      required this.categoryName});
+      required this.categoryName,
+      required this.exerciseId});
 
   final String exerciseName;
   final String questionCompleted;
   final String categoryName;
+  final String exerciseId;
 
   @override
   State<MyCard> createState() => _MyCardState();
@@ -29,6 +31,7 @@ class _MyCardState extends State<MyCard> {
           CupertinoPageRoute(
             builder: (context) => QuestionScreen(
               title: widget.categoryName,
+              exerciseId: widget.exerciseId,
             ),
           ),
         );

@@ -1,9 +1,8 @@
 import 'dart:core';
 
 import 'package:flutter/material.dart';
-import 'package:inburgering_trainer/models/exersiceModel.dart';
+import 'package:inburgering_trainer/models/exercise_model.dart';
 import 'package:inburgering_trainer/repository/exercise_repository.dart';
-import 'package:inburgering_trainer/screens/Home/question_screen.dart';
 import 'package:inburgering_trainer/theme/colors.dart';
 import 'package:inburgering_trainer/utils/imports.dart';
 import 'package:inburgering_trainer/utils/sizes.dart';
@@ -56,13 +55,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                 .textStyle
                                 .copyWith(color: MyColors.lightBlackColor),
                           ),
-                          Spacer(),
-                          Icon(
+                          const Spacer(),
+                          const Icon(
                             Icons.flag_outlined,
                             size: 20,
                             color: MyColors.primaryColor,
                           ),
-                          Text("F3/ 208")
+                          const Text("F3/ 208")
                         ],
                       ),
                       Padding(
@@ -137,8 +136,9 @@ class CardsGridwithHeading extends StatelessWidget {
               ),
               itemBuilder: (context, index2) {
                 return MyCard(
+                    exerciseId: exercisesByCategory[index][index2].id,
                     categoryName:
-                        exercisesByCategory[index][exerciseIndex].categoryName,
+                        exercisesByCategory[index][index2].exerciseName,
                     exerciseName:
                         exercisesByCategory[index][index2].exerciseName,
                     questionCompleted:
