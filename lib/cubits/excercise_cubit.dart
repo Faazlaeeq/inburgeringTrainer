@@ -1,5 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:inburgering_trainer/repository/excercise_repo.dart';
+import 'package:inburgering_trainer/models/exersiceModel.dart';
+import 'package:inburgering_trainer/repository/exercise_repository.dart';
 
 class ExerciseCubit extends Cubit<ExerciseState> {
   final ExerciseRepository exerciseRepository;
@@ -13,7 +15,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
       emit(ExerciseLoaded(exercises));
     } catch (e) {
       emit(ExerciseError('Failed to fetch exercises : $e'));
-      print(e);
+      debugPrint("Error from Cubit:$e");
     }
   }
 }
@@ -25,8 +27,7 @@ class ExerciseInitial extends ExerciseState {}
 class ExerciseLoading extends ExerciseState {}
 
 class ExerciseLoaded extends ExerciseState {
-  final Map exercises;
-  // final List<Exercise> exercises;
+  final List<ExerciseModel> exercises;
 
   ExerciseLoaded(this.exercises);
 }

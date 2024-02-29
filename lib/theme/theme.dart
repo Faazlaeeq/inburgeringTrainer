@@ -8,8 +8,8 @@ class MyTheme {
       brightness: Brightness.light,
       textTheme: CupertinoTextThemeData(
         primaryColor: CupertinoColors.black,
-        textStyle: GoogleFonts.roboto(
-          fontSize: 14,
+        textStyle: GoogleFonts.poppins(
+          fontSize: 12,
           fontWeight: FontWeight.w400,
           color: CupertinoColors.black,
         ),

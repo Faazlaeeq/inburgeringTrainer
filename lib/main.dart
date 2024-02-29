@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inburgering_trainer/cubits/excercise_cubit.dart';
-import 'package:inburgering_trainer/lib/theme.dart';
-import 'package:inburgering_trainer/repository/excercise_repo.dart';
+import 'package:inburgering_trainer/theme/theme.dart';
+import 'package:inburgering_trainer/repository/exercise_repository.dart';
 import 'package:inburgering_trainer/screens/Home/home_screen.dart';
 
 void main() {
