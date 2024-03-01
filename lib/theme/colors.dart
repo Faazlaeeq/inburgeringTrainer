@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
 
 class MyColors {
-  static const Color accentColor = Color.fromRGBO(250, 207, 190, 1);
+  static const Color whiteColor = CupertinoColors.white;
+  static const Color accentColor = Color(0xFFFFF4F3);
   static const Color primaryColor = Color(0xFFFF6C2A);
   static const Color lighBlueColor = Color.fromRGBO(120, 153, 228, 1);
   static const Color accentBlueColor = Color(0xFFDAE9FB);
@@ -12,4 +13,5 @@ class MyColors {
   static const Color cardColor = Color.fromRGBO(245, 245, 240, 1);
   static const Color outlineColor = Color.fromRGBO(228, 228, 227, 1);
   static const Color lightBlackColor = Color(0xFF30302E);
+  static const Color lightGreyColor = Color(0xFFD9D9D9);
 }

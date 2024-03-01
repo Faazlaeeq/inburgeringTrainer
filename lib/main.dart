@@ -14,14 +14,16 @@ void main() {
 class MainApp extends StatelessWidget {
   MainApp({super.key});
   final excerciseCubit = ExerciseCubit(ExerciseRepository());
+  final questionCubit = QuestionCubit(QuestionRepository());
   @override
   Widget build(BuildContext context) {
-    return CupertinoApp(
-      theme: MyTheme.lightTheme(context),
-      home: MultiBlocProvider(providers: [
+    return MultiBlocProvider(
+      providers: [
         BlocProvider(create: (context) => excerciseCubit),
-        BlocProvider(create: (context) => QuestionCubit(QuestionRepository())),
-      ], child: const HomeScreen()),
+        BlocProvider(create: (context) => questionCubit),
+      ],
+      child: CupertinoApp(
+          theme: MyTheme.lightTheme(context), home: const HomeScreen()),
     );
   }
 }

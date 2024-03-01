@@ -7,10 +7,11 @@ class QuestionCubit extends Cubit<QuestionState> {
 
   QuestionCubit(this._questionRepository) : super(QuestionInitial());
 
-  Future<void> getQuestions() async {
+  Future<void> getQuestions({String? exerciseId, String? userId}) async {
     try {
       emit(QuestionLoading());
-      final questions = await _questionRepository.getQuestions();
+      final questions = await _questionRepository.getQuestions(
+          exerciseId: exerciseId, userId: userId);
       emit(QuestionLoaded(questions));
     } catch (e) {
       emit(QuestionError(e.toString()));

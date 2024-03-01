@@ -1,0 +1,30 @@
+{
+   "exercises":[
+      {
+         "id":3f5e6814-be38-4ffe-9865-6dd8bafc37d1,
+         "questionData":{
+            "answerSound":"",
+            "images":[
+               
+            ],
+            "imageURLs":[
+               "https://langtools-app-content-gamma-eu-west-3.s3.amazonaws.com/images/describe-1-a.png",
+               "https://langtools-app-content-gamma-eu-west-3.s3.amazonaws.com/images/describe-1-b.png"
+            ],
+            "questionSound":"",
+            "images":[
+               
+            ],
+            "imageURLs":[
+               "https://langtools-app-content-gamma-eu-west-3.s3.amazonaws.com/images/describe-2-a.png",
+               "https://langtools-app-content-gamma-eu-west-3.s3.amazonaws.com/images/describe-2-b.png"
+            ],
+            "questionSound":"qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqr/+2TEkgPAAAGkAAAAIAAANIAAAASqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqo=",
+            "questionText":"Maria werkt als stewardess. Kijk naar alle plaatjes. Vertel wat Maria doet. Vertel iets over alle plaatjes.",
+            "suggestedAnswer":"Maria begroet een passagier hartelijk en serveert eten aan de klant."
+         },
+         "questionType":"Choice",
+         "type":"Question"
+      }
+   ]
+}
