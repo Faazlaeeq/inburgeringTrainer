@@ -1,7 +1,11 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:inburgering_trainer/cubits/excercise_cubit.dart';
-import 'package:inburgering_trainer/cubits/question_cubit.dart';
+import 'package:inburgering_trainer/logic/audio_cubit.dart';
+import 'package:inburgering_trainer/logic/bloc/speech_bloc.dart';
+import 'package:inburgering_trainer/logic/excercise_cubit.dart';
+import 'package:inburgering_trainer/logic/mic_cubit.dart';
+import 'package:inburgering_trainer/logic/question_cubit.dart';
 import 'package:inburgering_trainer/repository/question_repository.dart';
 import 'package:inburgering_trainer/theme/theme.dart';
 import 'package:inburgering_trainer/repository/exercise_repository.dart';
@@ -21,9 +25,14 @@ class MainApp extends StatelessWidget {
       providers: [
         BlocProvider(create: (context) => excerciseCubit),
         BlocProvider(create: (context) => questionCubit),
+        BlocProvider(create: (context) => AudioCubit()),
+        BlocProvider(create: (context) => MicCubit()),
+        BlocProvider(create: (context) => SpeechBloc())
       ],
-      child: CupertinoApp(
-          theme: MyTheme.lightTheme(context), home: const HomeScreen()),
+      child: MaterialApp(
+        home: CupertinoApp(
+            theme: MyTheme.lightTheme(context), home: const HomeScreen()),
+      ),
     );
   }
 }

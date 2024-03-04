@@ -15,9 +15,14 @@ class ModalContent {
 
 class ModalFromBottom extends StatelessWidget {
   final Function()? onPressed;
+  final Widget? buttonAtTop;
 
   const ModalFromBottom(
-      {super.key, this.title, this.onPressed, required this.data});
+      {super.key,
+      this.title,
+      this.onPressed,
+      required this.data,
+      this.buttonAtTop});
 
   final String? title;
   final List<ModalContent> data;
@@ -66,10 +71,7 @@ class ModalFromBottom extends StatelessWidget {
                 ),
               ],
             ),
-            IconButton(
-                onPressed: onPressed,
-                icon: const ImageIcon(AssetImage("assets/icons/speak.png"),
-                    color: MyColors.blackColor, size: 48)),
+            if (buttonAtTop != null) buttonAtTop!,
             Container(
               margin: paddingSymmetricHorizontal1,
               width: double.maxFinite,

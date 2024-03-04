@@ -1,13 +1,12 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:inburgering_trainer/cubits/question_cubit.dart';
-import 'package:inburgering_trainer/repository/question_repository.dart';
+import 'package:inburgering_trainer/logic/audio_cubit.dart';
+import 'package:inburgering_trainer/logic/question_cubit.dart';
 import 'package:inburgering_trainer/theme/colors.dart';
 import 'package:inburgering_trainer/utils/sizes.dart';
-import 'package:inburgering_trainer/widgets/modal_from_bottom.dart';
+import 'package:inburgering_trainer/widgets/mywidgets.dart';
 
 import '../../utils/imports.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 class QuestionScreen extends StatefulWidget {
   const QuestionScreen(
@@ -20,12 +19,26 @@ class QuestionScreen extends StatefulWidget {
 }
 
 class _QuestionScreenState extends State<QuestionScreen> {
-  QuestionCubit questionCubit = QuestionCubit(QuestionRepository());
+  // QuestionCubit questionCubit = QuestionCubit(QuestionRepository());
+  late AudioCubit _audioCubit;
+
   @override
   void initState() {
-    questionCubit.getQuestions(exerciseId: widget.exerciseId);
+    _audioCubit = context.read<AudioCubit>();
+    context.read<QuestionCubit>().getQuestions(exerciseId: widget.exerciseId);
     super.initState();
+    currentIndex = pageController.initialPage + 1;
   }
+
+  @override
+  void dispose() {
+    _audioCubit.stopAudio(); // Stop the audio
+    super.dispose();
+  }
+
+  PageController pageController = PageController(initialPage: 0);
+  int? currentIndex;
+  final currentPageNotifier = ValueNotifier<int>(1);
 
   @override
   Widget build(BuildContext context) {
@@ -51,324 +64,156 @@ class _QuestionScreenState extends State<QuestionScreen> {
                 Navigator.of(context).pop();
               },
             )),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: padding2),
-            child: SingleChildScrollView(
-                child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Progress (2/8)",
-                  style: CupertinoTheme.of(context)
-                      .textTheme
-                      .textStyle
-                      .copyWith(color: MyColors.lightBlackColor, fontSize: 14),
-                ),
-                Padding(
-                  padding: paddingSymmetricVertical2,
-                  child: LinearProgressIndicator(
-                    value: 0.5,
-                    minHeight: 6,
-                    backgroundColor: MyColors.outlineColor,
-                    valueColor:
-                        const AlwaysStoppedAnimation(MyColors.primaryColor),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  "Please listen to the voice",
-                  style: CupertinoTheme.of(context)
-                      .textTheme
-                      .textStyle
-                      .copyWith(
-                          color: MyColors.blackColor,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(
-                  height: padding1,
-                ),
-                RichText(
-                  text: TextSpan(
-                    style:
-                        CupertinoTheme.of(context).textTheme.textStyle.copyWith(
-                              color: MyColors.blackColor,
-                              fontSize: 12,
-                            ),
-                    children: <TextSpan>[
-                      const TextSpan(
-                          text:
-                              'The voice is related to images below. Use the image cues for framing your answer. '),
-                      TextSpan(
-                        text: 'More details',
-                        style: CupertinoTheme.of(context)
-                            .textTheme
-                            .textStyle
-                            .copyWith(
-                              color: MyColors.primaryColor,
-                              fontWeight: FontWeight.bold,
-                            ), // Change color
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = () {
-                            print('More details tapped');
-                            // Navigate or do something else
-                          },
+        child: BlocBuilder<QuestionCubit, QuestionState>(
+          builder: (context, state) {
+            if (state is QuestionLoaded) {
+              return SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: padding2),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ValueListenableBuilder<int>(
+                        valueListenable: currentPageNotifier,
+                        builder: (context, currentPage, _) {
+                          return Text(
+                            "Progress ($currentPage/${state.questions.length})",
+                            style: CupertinoTheme.of(context)
+                                .textTheme
+                                .textStyle
+                                .copyWith(
+                                    color: MyColors.lightBlackColor,
+                                    fontSize: 14),
+                          );
+                        },
+                      ),
+                      Padding(
+                        padding: paddingSymmetricVertical2,
+                        child: LinearProgressIndicator(
+                          value: 0.5,
+                          minHeight: 6,
+                          backgroundColor: MyColors.outlineColor,
+                          valueColor: const AlwaysStoppedAnimation(
+                              MyColors.primaryColor),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      Expanded(
+                        child: PageView.builder(
+                            onPageChanged: (index) {
+                              currentPageNotifier.value = index + 1;
+                              if (context.read<AudioCubit>().state
+                                  is AudioPlaying) {
+                                context.read<AudioCubit>().stopAudio();
+                              }
+                            },
+                            itemCount: state.questions.length,
+                            controller: pageController,
+                            itemBuilder: (context, index) {
+                              return QuestionPageWidget(
+                                index: index,
+                              );
+                            }),
+                      ),
+                      const Center(
+                          child: Text(
+                        "Tap to Speak",
+                        style:
+                            TextStyle(color: MyColors.blackColor, fontSize: 14),
+                      )),
+                      Row(
+                        children: [
+                          MicWidget(),
+                          Center(
+                            child: IconButton(
+                                onPressed: () {},
+                                icon: const Image(
+                                  image: AssetImage('assets/icons/mic.png'),
+                                  width: 100,
+                                  height: 100,
+                                )),
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
-                ImagesInRow(questionCubit: questionCubit),
-                const SizedBox(
-                  height: padding2,
-                ),
-                SizedBox(
-                  width: width(context),
-                  child: TextButton(
-                    onPressed: () {
-                      showCupertinoModalPopup(
-                        context: context,
-                        barrierColor: const Color.fromRGBO(0, 0, 0, 0.6),
-                        builder: (BuildContext context) {
-                          return BlocBuilder<QuestionCubit, QuestionState>(
-                            bloc: questionCubit,
-                            builder: (context, state) {
-                              if (state is QuestionLoaded) {
-                                return ModalFromBottom(
-                                  title: "Question Text",
-                                  data: [
-                                    //TODO:make index dynamic
-
-                                    ModalContent(
-                                        title: "Actual Question",
-                                        content: state.questions[0].questionData
-                                            .questionText),
-                                  ],
-                                );
-                              }
-                              return const CupertinoActivityIndicator();
-                            },
-                          );
-                        },
-                      );
-                    },
-                    child: Text(
-                      'Show Text',
-                      style: CupertinoTheme.of(context)
-                          .textTheme
-                          .textStyle
-                          .copyWith(
-                              color: MyColors.primaryColor,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-                const SizedBox(
-                  height: padding2,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                        onPressed: () {},
-                        icon: const ImageIcon(
-                          AssetImage('assets/icons/speak.png'),
-                          size: 72,
-                          color: MyColors.blackColor,
-                        )),
-                  ],
-                ),
-                SizedBox(
-                  height: height(context) / 8,
-                ),
-                const Center(
-                    child: Text(
-                  "Tap to Speak",
-                  style: TextStyle(color: MyColors.blackColor, fontSize: 14),
-                )),
-                Center(
-                  child: IconButton(
-                      onPressed: () {},
-                      icon: const Image(
-                        image: AssetImage('assets/icons/mic.png'),
-                        width: 100,
-                        height: 100,
-                      )),
-                ),
-              ],
-            )),
-          ),
+              );
+            } else if (state is QuestionError) {
+              return MyErrorWidget(
+                message: state.message,
+              );
+            } else {
+              return const Center(
+                child: CupertinoActivityIndicator(),
+              );
+            }
+          },
         ));
   }
 }
 
-class ImagesInRow extends StatelessWidget {
-  const ImagesInRow({
-    super.key,
-    required this.questionCubit,
-  });
-
-  final QuestionCubit questionCubit;
-
+class QuestionPageWidget extends StatelessWidget {
+  const QuestionPageWidget({super.key, required this.index});
+  final int index;
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<QuestionCubit, QuestionState>(
-      bloc: questionCubit,
-      builder: (context, state) {
-        return Container(
-          padding: paddingSymmetricVertical3,
-          width: width(context),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              if (state is QuestionLoaded) ...[
-                Container(
-                  height: 106,
-                  padding: paddingAll0,
-                  width: width(context) / 2.2,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Image.network(
-                      loadingBuilder: (context, child, loadingProgress) =>
-                          loadingProgress == null
-                              ? child
-                              : const CupertinoActivityIndicator(),
-                      state.questions[0].questionData.imageURLs[0]),
+    return Column(
+      children: [
+        const SizedBox(
+          height: 10,
+        ),
+        Text(
+          "Please listen to the voice",
+          style: CupertinoTheme.of(context).textTheme.textStyle.copyWith(
+              color: MyColors.blackColor,
+              fontSize: 16,
+              fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(
+          height: padding1,
+        ),
+        RichText(
+          text: TextSpan(
+            style: CupertinoTheme.of(context).textTheme.textStyle.copyWith(
+                  color: MyColors.blackColor,
+                  fontSize: 12,
                 ),
-                Container(
-                  height: 106,
-                  padding: paddingAll0,
-                  width: width(context) / 2.2,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Image.network(
-                      loadingBuilder: (context, child, loadingProgress) =>
-                          loadingProgress == null
-                              ? child
-                              : const CupertinoActivityIndicator(),
-                      state.questions[0].questionData.imageURLs[1]),
-                )
-              ],
-              if (state is QuestionLoading || state is QuestionInitial) ...[
-                Container(
-                  padding: paddingAll0,
-                  width: width(context) / 2.2,
-                  height: 106,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const CupertinoActivityIndicator(),
-                ),
-                Container(
-                  padding: paddingAll0,
-                  width: width(context) / 2.2,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const CupertinoActivityIndicator(),
-                ),
-              ],
-              if (state is QuestionError) ...[
-                Container(
-                  padding: paddingAll0,
-                  width: width(context) / 2.2,
-                  height: 106,
-                  decoration: BoxDecoration(
-                      border:
-                          Border.all(color: MyColors.outlineColor, width: 2),
-                      borderRadius: BorderRadius.circular(8)),
-                  child: Column(
-                    children: [
-                      const Icon(
-                        Icons.error,
-                        color: MyColors.primaryColor,
-                        size: 40,
-                      ),
-                      Text(
-                        state.message,
-                        style: CupertinoTheme.of(context)
-                            .textTheme
-                            .textStyle
-                            .copyWith(
-                                color: MyColors.primaryColor, fontSize: 10),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: paddingAll0,
-                  width: width(context) / 2.2,
-                  height: 106,
-                  decoration: BoxDecoration(
-                      border:
-                          Border.all(color: MyColors.outlineColor, width: 2),
-                      borderRadius: BorderRadius.circular(8)),
-                  child: Column(
-                    children: [
-                      const Icon(
-                        Icons.error,
-                        color: MyColors.primaryColor,
-                        size: 40,
-                      ),
-                      Text(
-                        state.message,
-                        style: CupertinoTheme.of(context)
-                            .textTheme
-                            .textStyle
-                            .copyWith(
-                                color: MyColors.primaryColor, fontSize: 10),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+            children: <TextSpan>[
+              const TextSpan(
+                  text:
+                      'The voice is related to images below. Use the image cues for framing your answer. '),
+              TextSpan(
+                text: 'More details',
+                style: CupertinoTheme.of(context).textTheme.textStyle.copyWith(
+                      color: MyColors.primaryColor,
+                      fontWeight: FontWeight.bold,
+                    ), // Change color
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () {
+                    print('More details tapped');
+                    // Navigate or do something else
+                  },
+              ),
             ],
           ),
-        );
-      },
-    );
-  }
-}
-
-class modalFromBottom extends StatelessWidget {
-  const modalFromBottom({
-    super.key,
-    required this.widget,
-  });
-
-  final QuestionScreen widget;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: height(context) / 4,
-      width: width(context),
-      color: CupertinoColors.white,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text(widget.title,
-              style: CupertinoTheme.of(context).textTheme.textStyle.copyWith(
-                  color: MyColors.blackColor,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold)),
-          const SizedBox(height: 20),
-          CupertinoButton(
-            child: Text('Close'),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-        ],
-      ),
+        ),
+        ImagesInRow(
+          index: index,
+        ),
+        const SizedBox(
+          height: padding2,
+        ),
+        ShowTextWidget(index: index),
+        const SizedBox(
+          height: padding2,
+        ),
+        PlayQuestionButton(index: index),
+        SizedBox(
+          height: height(context) / 8,
+        ),
+      ],
     );
   }
 }
