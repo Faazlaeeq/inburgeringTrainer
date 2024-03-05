@@ -30,10 +30,24 @@ class SpeechListner {
     speechBloc.add(EmptySpeech());
 
     BlocProvider.of<MicCubit>(context).micActive();
-    await speech.listen(
+    SpeechListenOptions options = SpeechListenOptions(
+        partialResults: false,
+        autoPunctuation: true,
+        enableHapticFeedback: true,
+        listenMode: ListenMode.dictation,
+        cancelOnError: true);
+    await speech
+        .listen(
+      listenOptions: options,
       onResult: onResultHandler,
-      partialResults: false,
-    );
+      listenFor: const Duration(seconds: 10),
+      localeId: 'nl_NL',
+      onSoundLevelChange: (level) => print('Sound level $level'),
+    )
+        .catchError((e) {
+      print(e);
+      BlocProvider.of<MicCubit>(context).micError();
+    });
   }
 
   void stopListening() {
@@ -42,7 +56,12 @@ class SpeechListner {
   }
 
   void speechInit() {
-    speech.initialize().then((available) {
+    speech
+        .initialize(
+      finalTimeout: const Duration(seconds: 5),
+      onStatus: (status) => {if (status == 'notListening') stopListening()},
+    )
+        .then((available) {
       if (available) {
         BlocProvider.of<MicCubit>(context).micActive();
         startListening();

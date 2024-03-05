@@ -1,10 +1,18 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:inburgering_trainer/logic/audio_cubit.dart';
+import 'package:inburgering_trainer/logic/audio_player.dart';
+import 'package:inburgering_trainer/logic/audio_recorder.dart';
+import 'package:inburgering_trainer/logic/helpers/sound_helper.dart';
 import 'package:inburgering_trainer/logic/question_cubit.dart';
 import 'package:inburgering_trainer/theme/colors.dart';
 import 'package:inburgering_trainer/utils/sizes.dart';
 import 'package:inburgering_trainer/widgets/mywidgets.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:audio_waveforms/audio_waveforms.dart';
 
 import '../../utils/imports.dart';
 
@@ -21,6 +29,13 @@ class QuestionScreen extends StatefulWidget {
 class _QuestionScreenState extends State<QuestionScreen> {
   // QuestionCubit questionCubit = QuestionCubit(QuestionRepository());
   late AudioCubit _audioCubit;
+  String? audioPath;
+  String? path;
+  String? musicFile;
+  bool isRecording = false;
+  bool isRecordingCompleted = false;
+  bool isLoading = true;
+  late Directory appDirectory;
 
   @override
   void initState() {
@@ -39,6 +54,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
   PageController pageController = PageController(initialPage: 0);
   int? currentIndex;
   final currentPageNotifier = ValueNotifier<int>(1);
+  bool showPlayer = false;
 
   @override
   Widget build(BuildContext context) {
@@ -100,21 +116,42 @@ class _QuestionScreenState extends State<QuestionScreen> {
                         ),
                       ),
                       Expanded(
-                        child: PageView.builder(
-                            onPageChanged: (index) {
-                              currentPageNotifier.value = index + 1;
-                              if (context.read<AudioCubit>().state
-                                  is AudioPlaying) {
-                                context.read<AudioCubit>().stopAudio();
-                              }
-                            },
-                            itemCount: state.questions.length,
-                            controller: pageController,
-                            itemBuilder: (context, index) {
-                              return QuestionPageWidget(
-                                index: index,
-                              );
-                            }),
+                        child: showPlayer
+                            ? Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 25),
+                                child: AudioPlayer(
+                                  source: audioPath!,
+                                  onDelete: () {
+                                    setState(() => showPlayer = false);
+                                  },
+                                ),
+                              )
+                            : Recorder(
+                                onStop: (path) {
+                                  if (kDebugMode)
+                                    print('Recorded file path: $path');
+                                  setState(() {
+                                    audioPath = path;
+                                    showPlayer = true;
+                                  });
+                                },
+                              ),
+                        // child: PageView.builder(
+                        //     onPageChanged: (index) {
+                        //       currentPageNotifier.value = index + 1;
+                        //       if (context.read<AudioCubit>().state
+                        //           is AudioPlaying) {
+                        //         context.read<AudioCubit>().stopAudio();
+                        //       }
+                        //     },
+                        //     itemCount: state.questions.length,
+                        //     controller: pageController,
+                        //     itemBuilder: (context, index) {
+                        //       return QuestionPageWidget(
+                        //         index: index,
+                        //       );
+                        //     }),
                       ),
                       const Center(
                           child: Text(
@@ -122,20 +159,28 @@ class _QuestionScreenState extends State<QuestionScreen> {
                         style:
                             TextStyle(color: MyColors.blackColor, fontSize: 14),
                       )),
-                      Row(
-                        children: [
-                          MicWidget(),
-                          Center(
-                            child: IconButton(
-                                onPressed: () {},
-                                icon: const Image(
-                                  image: AssetImage('assets/icons/mic.png'),
-                                  width: 100,
-                                  height: 100,
-                                )),
-                          ),
-                        ],
-                      ),
+                      MicWidget(),
+                      showPlayer
+                          ? Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 25),
+                              child: AudioPlayer(
+                                source: audioPath!,
+                                onDelete: () {
+                                  setState(() => showPlayer = false);
+                                },
+                              ),
+                            )
+                          : Recorder(
+                              onStop: (path) {
+                                if (kDebugMode)
+                                  print('Recorded file path: $path');
+                                setState(() {
+                                  audioPath = path;
+                                  showPlayer = true;
+                                });
+                              },
+                            ),
                     ],
                   ),
                 ),
@@ -210,8 +255,8 @@ class QuestionPageWidget extends StatelessWidget {
           height: padding2,
         ),
         PlayQuestionButton(index: index),
-        SizedBox(
-          height: height(context) / 8,
+        const SizedBox(
+          height: padding2,
         ),
       ],
     );

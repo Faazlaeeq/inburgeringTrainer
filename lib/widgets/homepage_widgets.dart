@@ -158,32 +158,35 @@ class ImagesInRow extends StatelessWidget {
             children: [
               if (state is QuestionLoaded) ...[
                 Container(
-                  height: 106,
+                  height: 130,
                   padding: paddingAll0,
-                  width: width(context) / 2.2,
+                  width: width(context) / 2.3,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(15),
                   ),
                   child: Image.network(
                       loadingBuilder: (context, child, loadingProgress) =>
                           loadingProgress == null
                               ? child
                               : const CupertinoActivityIndicator(),
-                      state.questions[index].questionData.imageURLs[0]),
+                      state.questions[index].questionData.imageURLs[0],
+                      fit: BoxFit.cover),
                 ),
                 Container(
-                  height: 106,
+                  height: 130,
                   padding: paddingAll0,
-                  width: width(context) / 2.2,
+                  width: width(context) / 2.3,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Image.network(
-                      loadingBuilder: (context, child, loadingProgress) =>
-                          loadingProgress == null
-                              ? child
-                              : const CupertinoActivityIndicator(),
-                      state.questions[index].questionData.imageURLs[1]),
+                    loadingBuilder: (context, child, loadingProgress) =>
+                        loadingProgress == null
+                            ? child
+                            : const CupertinoActivityIndicator(),
+                    state.questions[index].questionData.imageURLs[1],
+                    fit: BoxFit.cover,
+                  ),
                 )
               ],
               if (state is QuestionLoading || state is QuestionInitial) ...[

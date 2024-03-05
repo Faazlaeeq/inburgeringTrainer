@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:inburgering_trainer/logic/helpers/speech_listener.dart';
 import 'package:inburgering_trainer/logic/mic_cubit.dart';
+import 'package:inburgering_trainer/theme/colors.dart';
 import 'package:inburgering_trainer/utils/imports.dart';
 
 class MicWidget extends StatelessWidget {
@@ -21,30 +22,67 @@ class MicWidget extends StatelessWidget {
     return BlocBuilder<MicCubit, MicState>(
       builder: (context, state) {
         if (state is MicActive) {
-          return FloatingActionButton(
-            onPressed: () => listen(context),
-            child: const CircularProgressIndicator(
-              color: Colors.white,
-            ),
-          );
+          return Container(
+              height: 100,
+              width: 100,
+              decoration: BoxDecoration(
+                  color: MyColors.primaryColor,
+                  borderRadius: BorderRadius.circular(50)),
+              child: IconButton(
+                onPressed: () => listen(context),
+                icon: const CupertinoActivityIndicator(
+                  radius: 15,
+                  color: MyColors.whiteColor,
+                ),
+              ));
         }
 
         if (state is MicInactive) {
-          return FloatingActionButton(
-            onPressed: () => listen(context),
-            child: const Icon(Icons.mic),
-          );
+          return Container(
+              height: 100,
+              width: 100,
+              decoration: BoxDecoration(
+                  color: MyColors.primaryColor,
+                  borderRadius: BorderRadius.circular(50)),
+              child: IconButton(
+                onPressed: () => listen(context),
+                icon: const ImageIcon(
+                  AssetImage("assets/icons/micicon.png"),
+                  size: 50,
+                  color: MyColors.whiteColor,
+                ),
+              ));
         }
         if (state is MicError) {
-          return FloatingActionButton(
-            onPressed: () => listen(context),
-            child: const Icon(Icons.error),
-          );
+          return Container(
+              height: 100,
+              width: 100,
+              decoration: BoxDecoration(
+                  color: MyColors.primaryColor,
+                  borderRadius: BorderRadius.circular(50)),
+              child: IconButton(
+                onPressed: () => listen(context),
+                icon: const Icon(
+                  Icons.error,
+                  color: MyColors.whiteColor,
+                  size: 50,
+                ),
+              ));
         }
-        return FloatingActionButton(
-          onPressed: () async => listen(context),
-          child: const Icon(Icons.mic),
-        );
+        return Container(
+            height: 100,
+            width: 100,
+            decoration: BoxDecoration(
+                color: MyColors.primaryColor,
+                borderRadius: BorderRadius.circular(50)),
+            child: IconButton(
+              onPressed: () => listen(context),
+              icon: const ImageIcon(
+                AssetImage("assets/icons/micicon.png"),
+                size: 50,
+                color: MyColors.whiteColor,
+              ),
+            ));
       },
     );
   }
