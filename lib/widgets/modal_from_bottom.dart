@@ -85,13 +85,14 @@ class ModalFromBottom extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(e.title ?? "",
-                              style: CupertinoTheme.of(context)
-                                  .textTheme
-                                  .textStyle
-                                  .copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14)),
+                          if (e.title != null)
+                            Text(e.title!,
+                                style: CupertinoTheme.of(context)
+                                    .textTheme
+                                    .textStyle
+                                    .copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14)),
                           const SizedBox(height: 5),
                           Text(e.content ?? "",
                               style: CupertinoTheme.of(context)

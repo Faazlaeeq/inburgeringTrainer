@@ -17,7 +17,7 @@ class SpeechBloc extends Bloc<SpeechEvent, SpeechState> {
         print("Sending request");
         emit(SpeechLoading());
         await Future.delayed(const Duration(seconds: 10));
-        print("Loading emitted");
+        // print("Loading emitted");
         // await apiCall.sendRequest(event.speech).then((value) {
         //   emit(SpeechResponse(value));
         // });

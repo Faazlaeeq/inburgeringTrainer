@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inburgering_trainer/logic/bloc/speech_bloc.dart';
 import 'package:inburgering_trainer/logic/mic_cubit.dart';
@@ -22,7 +23,9 @@ class SpeechListner {
 
   void onResultHandler(SpeechRecognitionResult val) {
     speechBloc.add(ConcatenateSpeech(speech: val.recognizedWords));
-    print(val.recognizedWords);
+    if (kDebugMode) {
+      print("faaz: ${val.recognizedWords}");
+    }
     stopListening();
   }
 
@@ -40,7 +43,7 @@ class SpeechListner {
         .listen(
       listenOptions: options,
       onResult: onResultHandler,
-      listenFor: const Duration(seconds: 10),
+      listenFor: Duration(seconds: 20),
       localeId: 'nl_NL',
       onSoundLevelChange: (level) => print('Sound level $level'),
     )
@@ -50,16 +53,23 @@ class SpeechListner {
     });
   }
 
-  void stopListening() {
-    speech.stop();
-    BlocProvider.of<MicCubit>(context).micInactive();
+  void stopListening() async {
+    print("faaz:stopListening Called");
+    await speech.stop();
+    if (context.mounted) BlocProvider.of<MicCubit>(context).micInactive();
   }
 
   void speechInit() {
     speech
         .initialize(
-      finalTimeout: const Duration(seconds: 5),
-      onStatus: (status) => {if (status == 'notListening') stopListening()},
+      finalTimeout: const Duration(seconds: 20),
+      onStatus: (status) {
+        print("faaz:" + status);
+        if (status == 'notListening' || status == 'done') {
+          print("faaz: in here");
+          stopListening();
+        }
+      },
     )
         .then((available) {
       if (available) {

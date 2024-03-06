@@ -31,6 +31,10 @@ dependencies:
   flutter_sound: any
   record: ^5.0.4
   audio_waveforms: ^1.0.4
+  mockito: ^5.4.4
+  meta: ^1.10.0
+  avatar_glow: ^3.0.1
+  hydrated_bloc: ^9.1.4
 
 dev_dependencies:
   flutter_test:

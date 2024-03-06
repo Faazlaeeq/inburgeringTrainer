@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:inburgering_trainer/logic/audio_cubit.dart';
+import 'package:inburgering_trainer/logic/bloc/speech_bloc.dart';
+import 'package:inburgering_trainer/logic/cubit/answer_cubit.dart';
 import 'package:inburgering_trainer/logic/question_cubit.dart';
 import 'package:inburgering_trainer/theme/colors.dart';
 import 'package:inburgering_trainer/utils/imports.dart';
@@ -157,6 +159,17 @@ class ImagesInRow extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               if (state is QuestionLoaded) ...[
+                BlocListener<SpeechBloc, SpeechState>(
+                  listener: (context, answerState) {
+                    if (answerState is SpeechUpdated) {
+                      context.read<AnswerCubit>().postAnswer(
+                          state.questions[index].questionData.questionText,
+                          answerState.speech,
+                          "63d97bb2-5678-47a2-8ebc-b1f84b27e5d6");
+                    }
+                  },
+                  child: const SizedBox(),
+                ),
                 Container(
                   height: 130,
                   padding: paddingAll0,

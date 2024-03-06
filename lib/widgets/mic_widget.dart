@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:avatar_glow/avatar_glow.dart';
+
 import 'package:inburgering_trainer/logic/helpers/speech_listener.dart';
 import 'package:inburgering_trainer/logic/mic_cubit.dart';
 import 'package:inburgering_trainer/theme/colors.dart';
@@ -22,16 +24,24 @@ class MicWidget extends StatelessWidget {
     return BlocBuilder<MicCubit, MicState>(
       builder: (context, state) {
         if (state is MicActive) {
-          return Container(
-              height: 100,
-              width: 100,
-              decoration: BoxDecoration(
-                  color: MyColors.primaryColor,
-                  borderRadius: BorderRadius.circular(50)),
-              child: IconButton(
-                onPressed: () => listen(context),
-                icon: const CupertinoActivityIndicator(
-                  radius: 15,
+          return AvatarGlow(
+              animate: true,
+              glowCount: 1,
+              glowRadiusFactor: 0.5,
+              glowColor: MyColors.primaryColor,
+              duration: const Duration(milliseconds: 2000),
+              startDelay: const Duration(milliseconds: 100),
+              repeat: true,
+              child: Container(
+                height: 100,
+                width: 100,
+                padding: const EdgeInsets.all(30),
+                decoration: BoxDecoration(
+                    color: MyColors.primaryColor,
+                    borderRadius: BorderRadius.circular(50)),
+                child: const ImageIcon(
+                  AssetImage("assets/icons/micicon.png"),
+                  size: 50,
                   color: MyColors.whiteColor,
                 ),
               ));
@@ -39,50 +49,46 @@ class MicWidget extends StatelessWidget {
 
         if (state is MicInactive) {
           return Container(
-              height: 100,
-              width: 100,
-              decoration: BoxDecoration(
-                  color: MyColors.primaryColor,
-                  borderRadius: BorderRadius.circular(50)),
-              child: IconButton(
-                onPressed: () => listen(context),
-                icon: const ImageIcon(
-                  AssetImage("assets/icons/micicon.png"),
-                  size: 50,
-                  color: MyColors.whiteColor,
-                ),
-              ));
+            height: 100,
+            width: 100,
+            padding: const EdgeInsets.all(30),
+            decoration: BoxDecoration(
+                color: MyColors.primaryColor,
+                borderRadius: BorderRadius.circular(50)),
+            child: const ImageIcon(
+              AssetImage("assets/icons/micicon.png"),
+              size: 50,
+              color: MyColors.whiteColor,
+            ),
+          );
         }
         if (state is MicError) {
           return Container(
-              height: 100,
-              width: 100,
-              decoration: BoxDecoration(
-                  color: MyColors.primaryColor,
-                  borderRadius: BorderRadius.circular(50)),
-              child: IconButton(
-                onPressed: () => listen(context),
-                icon: const Icon(
-                  Icons.error,
-                  color: MyColors.whiteColor,
-                  size: 50,
-                ),
-              ));
-        }
-        return Container(
             height: 100,
             width: 100,
             decoration: BoxDecoration(
                 color: MyColors.primaryColor,
                 borderRadius: BorderRadius.circular(50)),
-            child: IconButton(
-              onPressed: () => listen(context),
-              icon: const ImageIcon(
-                AssetImage("assets/icons/micicon.png"),
-                size: 50,
-                color: MyColors.whiteColor,
-              ),
-            ));
+            child: const Icon(
+              Icons.error,
+              color: MyColors.whiteColor,
+              size: 50,
+            ),
+          );
+        }
+        return Container(
+          height: 100,
+          width: 100,
+          padding: const EdgeInsets.all(30),
+          decoration: BoxDecoration(
+              color: MyColors.primaryColor,
+              borderRadius: BorderRadius.circular(50)),
+          child: const ImageIcon(
+            AssetImage("assets/icons/micicon.png"),
+            size: 30,
+            color: MyColors.whiteColor,
+          ),
+        );
       },
     );
   }

@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 class MyColors {
   static const Color whiteColor = CupertinoColors.white;
+  static Color shadowColor = Colors.black.withOpacity(0.16);
   static const Color accentColor = Color(0xFFFFF4F3);
   static const Color primaryColor = Color(0xFFFF6C2A);
   static const Color lighBlueColor = Color.fromRGBO(120, 153, 228, 1);
@@ -14,4 +16,5 @@ class MyColors {
   static const Color outlineColor = Color.fromRGBO(228, 228, 227, 1);
   static const Color lightBlackColor = Color(0xFF30302E);
   static const Color lightGreyColor = Color(0xFFD9D9D9);
+  static const Color darkPrimaryColor = Color(0xFFFF3900);
 }
