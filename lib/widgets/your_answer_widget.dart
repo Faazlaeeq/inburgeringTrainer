@@ -126,7 +126,6 @@ class AnswerOptionsWidget extends StatelessWidget {
                           if (state is QuestionLoaded) {
                             return ModalFromBottom(
                                 title: "Correct Answer by us (Human Verified)",
-                                buttonAtTop: ,
                                 data: [
                                   ModalContent(
                                       content: state.questions[index]

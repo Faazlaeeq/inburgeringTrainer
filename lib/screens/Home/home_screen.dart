@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:inburgering_trainer/logic/excercise_cubit.dart';
 import 'package:inburgering_trainer/models/exercise_model.dart';
 import 'package:inburgering_trainer/repository/exercise_repository.dart';
+import 'package:inburgering_trainer/screens/setting/setting_screen.dart';
 import 'package:inburgering_trainer/theme/colors.dart';
 import 'package:inburgering_trainer/utils/imports.dart';
 import 'package:inburgering_trainer/utils/sizes.dart';
@@ -29,10 +30,16 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-        navigationBar: const CupertinoNavigationBar(
-          middle: Text(
+        navigationBar: CupertinoNavigationBar(
+          middle: const Text(
             'Inburgering Trainer',
           ),
+          trailing: IconButton(
+              onPressed: () {
+                Navigator.of(context).push(CupertinoPageRoute(
+                    builder: (context) => const SettingScreen()));
+              },
+              icon: const Icon(Icons.settings, color: MyColors.greyColor)),
         ),
         child: SafeArea(
           child: CustomScrollView(
