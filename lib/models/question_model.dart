@@ -1,7 +1,15 @@
+import 'package:hive/hive.dart';
+part 'question_model.g.dart';
+
+@HiveType(typeId: 1)
 class QuestionModel {
+  @HiveField(0)
   final String id;
+  @HiveField(1)
   final QuestionData questionData;
+  @HiveField(2)
   final String questionType;
+  @HiveField(3)
   final String type;
 
   QuestionModel({
@@ -30,12 +38,19 @@ class QuestionModel {
   }
 }
 
+@HiveType(typeId: 2)
 class QuestionData {
+  @HiveField(0)
   final String answerSound;
+  @HiveField(1)
   final List<String> images;
+  @HiveField(2)
   final List<String> imageURLs;
+  @HiveField(3)
   final String questionSound;
+  @HiveField(4)
   final String questionText;
+  @HiveField(5)
   final String suggestedAnswer;
 
   QuestionData({

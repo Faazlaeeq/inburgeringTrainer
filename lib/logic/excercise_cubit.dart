@@ -1,5 +1,9 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:inburgering_trainer/logic/helpers/hivehelper.dart';
+import 'package:inburgering_trainer/logic/helpers/internet_helper.dart';
 import 'package:inburgering_trainer/models/exercise_model.dart';
 import 'package:inburgering_trainer/repository/exercise_repository.dart';
 
@@ -11,8 +15,39 @@ class ExerciseCubit extends Cubit<ExerciseState> {
   Future<void> fetchExercises() async {
     emit(ExerciseLoading());
     try {
-      final exercises = await exerciseRepository.getUserExercises();
-      emit(ExerciseLoaded(exercises));
+      List<ExerciseModel>? exercises;
+      final netStatus = await InternetHelper.checkInternetConnectivity();
+      try {
+        final List<dynamic>? exList =
+            await HiveHelper.getData('exercises') as List<dynamic>?;
+        if (exList != null) {
+          exercises = exList.map((item) => item as ExerciseModel).toList();
+          debugPrint('exercises from hive:${exercises.length}');
+          emit(ExerciseLoaded(exercises));
+        }
+        if (netStatus) {
+          if (exercises == null) {
+            exercises = await exerciseRepository.getUserExercises();
+            await HiveHelper.saveData('exercises', exercises);
+            emit(ExerciseLoaded(exercises));
+            return;
+          } else if (exercises != await exerciseRepository.getUserExercises()) {
+            exercises = await exerciseRepository.getUserExercises();
+            await HiveHelper.saveData('exercises', exercises);
+          }
+          exercises =
+              await HiveHelper.getData('exercises') as List<ExerciseModel>?;
+        }
+      } on TypeError catch (e) {
+        debugPrint("Error from Hive:${e.toString()}");
+        if (netStatus) {
+          return;
+        }
+        exercises = await exerciseRepository.getUserExercises();
+        await HiveHelper.saveData('exercises', exercises);
+      }
+
+      emit(ExerciseLoaded(exercises!));
     } catch (e) {
       emit(ExerciseError('Failed to fetch exercises : $e'));
       debugPrint("Error from Cubit:$e");

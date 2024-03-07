@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:inburgering_trainer/config/api.dart';
+import 'package:inburgering_trainer/logic/helpers/hivehelper.dart';
 import 'package:inburgering_trainer/models/question_model.dart';
+import 'package:intl/intl.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
@@ -17,6 +19,9 @@ class QuestionRepository {
     debugPrint("getting exercises..");
     try {
       List<QuestionModel> questions = [];
+      DateTime now = DateTime.now();
+      String formattedDate = DateFormat('yyyy-MM-dd').format(now);
+      HiveHelper.saveData("questionLastFetched", formattedDate);
 
       final response = await Dio().get(
         GetApi.listQuestionsUrl,

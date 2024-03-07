@@ -6,6 +6,8 @@ import 'package:inburgering_trainer/theme/colors.dart';
 import 'package:inburgering_trainer/utils/imports.dart';
 import 'package:inburgering_trainer/utils/sizes.dart';
 import 'package:inburgering_trainer/widgets/error_widget.dart';
+import 'package:inburgering_trainer/widgets/homepage_widgets.dart';
+import 'package:inburgering_trainer/widgets/mic_widget.dart';
 import 'package:inburgering_trainer/widgets/modal_from_bottom.dart';
 
 class YourAnswerWidget extends StatelessWidget {
@@ -72,6 +74,7 @@ class YourAnswerWidget extends StatelessWidget {
                 child: TextButton(
                     onPressed: () {
                       context.read<AnswerCubit>().clearAnswer();
+                      MicWidget().listen(context);
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -125,11 +128,16 @@ class AnswerOptionsWidget extends StatelessWidget {
                         builder: (context, state) {
                           if (state is QuestionLoaded) {
                             return ModalFromBottom(
+                                buttonAtTop: PlayQuestionButton(
+                                  index: index,
+                                  iconSize: 40,
+                                  isQuestion: false,
+                                ),
                                 title: "Correct Answer by us (Human Verified)",
                                 data: [
                                   ModalContent(
                                       content: state.questions[index]
-                                          .questionData.questionText)
+                                          .questionData.suggestedAnswer)
                                 ]);
                           }
                           if (state is QuestionLoading) {

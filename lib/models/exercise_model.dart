@@ -1,12 +1,23 @@
 import 'dart:convert';
+import 'package:hive/hive.dart';
 
+part 'exercise_model.g.dart';
+
+@HiveType(typeId: 0)
 class ExerciseModel {
+  @HiveField(0)
   String id;
+  @HiveField(1)
   int questionsCount;
+  @HiveField(2)
   bool isPaid;
+  @HiveField(3)
   String exerciseName;
+  @HiveField(4)
   String type;
+  @HiveField(5)
   String categoryName;
+
   ExerciseModel(
       {required this.id,
       required this.questionsCount,

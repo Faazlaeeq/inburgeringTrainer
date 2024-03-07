@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:inburgering_trainer/logic/audio_cubit.dart';
 import 'package:inburgering_trainer/logic/bloc/speech_bloc.dart';
@@ -8,11 +9,36 @@ import 'package:inburgering_trainer/utils/imports.dart';
 import 'package:inburgering_trainer/utils/sizes.dart';
 import 'package:inburgering_trainer/widgets/modal_from_bottom.dart';
 
-class PlayQuestionButton extends StatelessWidget {
+class PlayQuestionButton extends StatefulWidget {
   const PlayQuestionButton(
-      {super.key, this.iconSize = 72, required this.index});
+      {super.key,
+      this.iconSize = 72,
+      required this.index,
+      this.isQuestion = true});
   final double iconSize;
   final int index;
+  final bool isQuestion;
+
+  @override
+  State<PlayQuestionButton> createState() => _PlayQuestionButtonState();
+}
+
+class _PlayQuestionButtonState extends State<PlayQuestionButton> {
+  @override
+  void initState() {
+    QuestionState state = context.read<QuestionCubit>().state;
+    AudioState audioState = context.read<AudioCubit>().state;
+
+    if (state is QuestionLoaded && audioState is AudioInitial) {
+      if (widget.isQuestion) {
+        context.read<AudioCubit>().playAudio(
+            state.questions[widget.index].questionData.questionSound,
+            state.questions[widget.index].id);
+      }
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -33,19 +59,19 @@ class PlayQuestionButton extends StatelessWidget {
               } else if (audioState is AudioStopped) {
                 icon = ImageIcon(
                   const AssetImage('assets/icons/speak.png'),
-                  size: iconSize,
+                  size: widget.iconSize,
                   color: MyColors.blackColor,
                 );
               } else if (audioState is AudioPlaying) {
                 icon = Icon(Icons.pause_circle_outline_rounded,
-                    size: iconSize, color: MyColors.blackColor);
+                    size: widget.iconSize, color: MyColors.blackColor);
               } else if (audioState is AudioPaused) {
                 icon = Icon(Icons.play_circle_outline_rounded,
-                    size: iconSize, color: MyColors.blackColor);
+                    size: widget.iconSize, color: MyColors.blackColor);
               } else {
                 icon = ImageIcon(
                   const AssetImage('assets/icons/speak.png'),
-                  size: iconSize,
+                  size: widget.iconSize,
                   color: MyColors.blackColor,
                 );
               }
@@ -59,9 +85,17 @@ class PlayQuestionButton extends StatelessWidget {
                   if ((state is QuestionLoaded) &&
                       (audioState is AudioStopped ||
                           audioState is AudioInitial)) {
-                    context.read<AudioCubit>().playAudio(
-                        state.questions[index].questionData.questionSound,
-                        state.questions[index].id);
+                    if (widget.isQuestion) {
+                      context.read<AudioCubit>().playAudio(
+                          state.questions[widget.index].questionData
+                              .questionSound,
+                          state.questions[widget.index].id);
+                    } else {
+                      context.read<AudioCubit>().playAudio(
+                          state
+                              .questions[widget.index].questionData.answerSound,
+                          state.questions[widget.index].id);
+                    }
                   } else if (state is QuestionLoaded &&
                       audioState is AudioPaused) {
                     context.read<AudioCubit>().resumeAudio();
@@ -177,13 +211,15 @@ class ImagesInRow extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
                   ),
-                  child: Image.network(
-                      loadingBuilder: (context, child, loadingProgress) =>
-                          loadingProgress == null
-                              ? child
-                              : const CupertinoActivityIndicator(),
-                      state.questions[index].questionData.imageURLs[0],
-                      fit: BoxFit.cover),
+                  child: CachedNetworkImage(
+                    imageUrl: state.questions[index].questionData.imageURLs[0],
+                    placeholder: (context, url) =>
+                        const CupertinoActivityIndicator(),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
+                    fit: BoxFit.cover,
+                    key: UniqueKey(),
+                  ),
                 ),
                 Container(
                   height: 130,
@@ -192,13 +228,14 @@ class ImagesInRow extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Image.network(
-                    loadingBuilder: (context, child, loadingProgress) =>
-                        loadingProgress == null
-                            ? child
-                            : const CupertinoActivityIndicator(),
-                    state.questions[index].questionData.imageURLs[1],
+                  child: CachedNetworkImage(
+                    imageUrl: state.questions[index].questionData.imageURLs[1],
+                    placeholder: (context, url) =>
+                        const CupertinoActivityIndicator(),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
                     fit: BoxFit.cover,
+                    key: UniqueKey(),
                   ),
                 )
               ],
