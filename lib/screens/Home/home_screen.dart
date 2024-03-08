@@ -1,7 +1,9 @@
 import 'dart:core';
 
 import 'package:flutter/material.dart';
+import 'package:inburgering_trainer/logic/cubit/activity_cubit.dart';
 import 'package:inburgering_trainer/logic/excercise_cubit.dart';
+import 'package:inburgering_trainer/logic/helpers/record_helper.dart';
 import 'package:inburgering_trainer/models/exercise_model.dart';
 import 'package:inburgering_trainer/repository/exercise_repository.dart';
 import 'package:inburgering_trainer/screens/setting/setting_screen.dart';
@@ -20,11 +22,14 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   ExerciseCubit exerciseCubit = ExerciseCubit(ExerciseRepository());
-
+  ActivityCubit activityCubit = ActivityCubit();
+  int totalQuestions = 0;
+  int totalAnswered = 0;
   @override
   void initState() {
     super.initState();
     exerciseCubit.fetchExercises();
+    activityCubit.fetchActivity();
   }
 
   @override
@@ -33,6 +38,14 @@ class _HomeScreenState extends State<HomeScreen> {
         navigationBar: CupertinoNavigationBar(
           middle: const Text(
             'Inburgering Trainer',
+          ),
+          leading: IconButton(
+            icon: const Icon(
+              Icons.refresh,
+              color: MyColors.greyColor,
+              size: 20,
+            ),
+            onPressed: () => setState(() {}),
           ),
           trailing: IconButton(
               onPressed: () {
@@ -52,39 +65,125 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: MyColors.cardColor,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            "Activity Tracker",
-                            style: CupertinoTheme.of(context)
-                                .textTheme
-                                .textStyle
-                                .copyWith(color: MyColors.lightBlackColor),
-                          ),
-                          const Spacer(),
-                          const Icon(
-                            Icons.flag_outlined,
-                            size: 20,
-                            color: MyColors.primaryColor,
-                          ),
-                          const Text("F3/ 208")
-                        ],
-                      ),
-                      Padding(
-                        padding: paddingSymmetricVertical2,
-                        child: LinearProgressIndicator(
-                          value: 0.5,
-                          minHeight: 10,
-                          backgroundColor: MyColors.bgColor,
-                          valueColor: const AlwaysStoppedAnimation(
-                              MyColors.primaryColor),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ],
-                  ),
+                  child: BlocBuilder<ActivityCubit, ActivityState>(
+                      bloc: activityCubit,
+                      builder: (context, state) {
+                        if (state is ActivityLoaded) {
+                          return Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    "Activity Tracker",
+                                    style: CupertinoTheme.of(context)
+                                        .textTheme
+                                        .textStyle
+                                        .copyWith(
+                                            color: MyColors.lightBlackColor),
+                                  ),
+                                  const Spacer(),
+                                  const Icon(
+                                    Icons.flag_outlined,
+                                    size: 20,
+                                    color: MyColors.primaryColor,
+                                  ),
+                                  Text(
+                                      "${state.activities.totalAnswered}/ ${state.activities.totalQuestions}"),
+                                ],
+                              ),
+                              Padding(
+                                padding: paddingSymmetricVertical2,
+                                child: LinearProgressIndicator(
+                                  value: state.activities.totalAnswered /
+                                      state.activities.totalQuestions,
+                                  minHeight: 10,
+                                  backgroundColor: MyColors.bgColor,
+                                  valueColor: const AlwaysStoppedAnimation(
+                                      MyColors.primaryColor),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                            ],
+                          );
+                        } else if (state is ActivityLoading) {
+                          return Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    "Activity Tracker",
+                                    style: CupertinoTheme.of(context)
+                                        .textTheme
+                                        .textStyle
+                                        .copyWith(
+                                            color: MyColors.lightBlackColor),
+                                  ),
+                                  const Spacer(),
+                                  const Icon(
+                                    Icons.flag_outlined,
+                                    size: 20,
+                                    color: MyColors.primaryColor,
+                                  ),
+                                  const CupertinoActivityIndicator
+                                      .partiallyRevealed(
+                                    radius: 10,
+                                  ),
+                                ],
+                              ),
+                              Padding(
+                                padding: paddingSymmetricVertical2,
+                                child: LinearProgressIndicator(
+                                  minHeight: 10,
+                                  backgroundColor: MyColors.bgColor,
+                                  valueColor: const AlwaysStoppedAnimation(
+                                      MyColors.primaryColor),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                            ],
+                          );
+                        } else if (state is ActivityError) {
+                          return Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    "Can't load Activity Tracker",
+                                    style: CupertinoTheme.of(context)
+                                        .textTheme
+                                        .textStyle
+                                        .copyWith(
+                                            color: MyColors.lightBlackColor),
+                                  ),
+                                  const Spacer(),
+                                  const Icon(
+                                    Icons.flag_outlined,
+                                    size: 20,
+                                    color: MyColors.primaryColor,
+                                  ),
+                                  const Icon(
+                                    Icons.error_outline,
+                                    color: MyColors.primaryColor,
+                                  ),
+                                ],
+                              ),
+                              Padding(
+                                padding: paddingSymmetricVertical2,
+                                child: LinearProgressIndicator(
+                                  value: 1,
+                                  minHeight: 10,
+                                  backgroundColor: MyColors.bgColor,
+                                  valueColor: const AlwaysStoppedAnimation(
+                                      MyColors.primaryColor),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                            ],
+                          );
+                        } else {
+                          return const SizedBox();
+                        }
+                      }),
                 ),
               ),
               BlocBuilder<ExerciseCubit, ExerciseState>(

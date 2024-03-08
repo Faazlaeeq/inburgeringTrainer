@@ -1,4 +1,6 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:hive/hive.dart';
+
 part 'question_model.g.dart';
 
 @HiveType(typeId: 1)
@@ -11,12 +13,15 @@ class QuestionModel {
   final String questionType;
   @HiveField(3)
   final String type;
+  @HiveField(4)
+  final String? lastFetched;
 
   QuestionModel({
     required this.id,
     required this.questionData,
     required this.questionType,
     required this.type,
+    this.lastFetched,
   });
 
   factory QuestionModel.fromJson(Map<String, dynamic> json) {
@@ -25,6 +30,7 @@ class QuestionModel {
       questionData: QuestionData.fromJson(json['questionData']),
       questionType: json['questionType'],
       type: json['type'],
+      lastFetched: json['lastFetched'],
     );
   }
 
@@ -34,6 +40,7 @@ class QuestionModel {
       'questionData': questionData.toJson(),
       'questionType': questionType,
       'type': type,
+      'lastFetched': lastFetched,
     };
   }
 }

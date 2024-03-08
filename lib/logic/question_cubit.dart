@@ -3,6 +3,7 @@ import 'package:inburgering_trainer/logic/helpers/internet_helper.dart';
 import 'package:inburgering_trainer/models/question_model.dart';
 import 'package:inburgering_trainer/repository/question_repository.dart';
 import 'package:inburgering_trainer/utils/imports.dart';
+import 'package:inburgering_trainer/utils/myexceptions.dart';
 
 class QuestionCubit extends Cubit<QuestionState> {
   final QuestionRepository _questionRepository;
@@ -13,32 +14,14 @@ class QuestionCubit extends Cubit<QuestionState> {
     emit(QuestionLoading());
     try {
       List<QuestionModel>? questions;
-      final netStatus = await InternetHelper.checkInternetConnectivity();
-      if (!netStatus) {
-        final List<dynamic>? quesList =
-            await HiveHelper.getData(exerciseId.toString()) as List<dynamic>?;
-        debugPrint('questions from hive:${quesList}');
-        if (quesList != null) {
-          questions = quesList.map((item) => item as QuestionModel).toList();
-          debugPrint('questions from hive:${questions.length}');
-          emit(QuestionLoaded(questions));
-        } else {
-          emit(QuestionError(
-              "No Internet connection!\n\n This app need internet connection at first load to store exercises for offline usage."));
-        }
-      }
-      if (netStatus) {
-        if (questions == null) {
-          questions = await _questionRepository.getQuestions(
-              exerciseId: exerciseId, userId: userId);
-          await HiveHelper.saveData(exerciseId.toString(), questions);
-          emit(QuestionLoaded(questions));
-          return;
-        }
-      }
-      if (questions != null) {
-        emit(QuestionLoaded(questions));
-      }
+
+      questions = await _questionRepository.getQuestions(
+          exerciseId: exerciseId, userId: userId);
+      emit(QuestionLoaded(questions, exerciseId: exerciseId!));
+      return;
+    } on NoInternetException catch (e) {
+      emit(QuestionError(e.toString()));
+      debugPrint("Error from Cubit:$e");
     } catch (e) {
       emit(QuestionError(
           'Error loading Exercise questions, Please try again later. if this continues contact support and add below given information.\n\nTechnical Information : $e'));
@@ -98,8 +81,8 @@ class QuestionLoading extends QuestionState {}
 
 class QuestionLoaded extends QuestionState {
   final List<QuestionModel> questions;
-
-  QuestionLoaded(this.questions);
+  final String exerciseId;
+  QuestionLoaded(this.questions, {required this.exerciseId});
 }
 
 class QuestionError extends QuestionState {

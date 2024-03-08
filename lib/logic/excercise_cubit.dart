@@ -6,6 +6,7 @@ import 'package:inburgering_trainer/logic/helpers/hivehelper.dart';
 import 'package:inburgering_trainer/logic/helpers/internet_helper.dart';
 import 'package:inburgering_trainer/models/exercise_model.dart';
 import 'package:inburgering_trainer/repository/exercise_repository.dart';
+import 'package:inburgering_trainer/utils/myexceptions.dart';
 
 class ExerciseCubit extends Cubit<ExerciseState> {
   final ExerciseRepository exerciseRepository;
@@ -24,8 +25,7 @@ class ExerciseCubit extends Cubit<ExerciseState> {
           exercises = exList.map((item) => item as ExerciseModel).toList();
           debugPrint('exercises from hive:${exercises.length}');
           emit(ExerciseLoaded(exercises));
-        }
-        if (netStatus) {
+        } else if (netStatus) {
           if (exercises == null) {
             exercises = await exerciseRepository.getUserExercises();
             await HiveHelper.saveData('exercises', exercises);
@@ -37,6 +37,10 @@ class ExerciseCubit extends Cubit<ExerciseState> {
           }
           exercises =
               await HiveHelper.getData('exercises') as List<ExerciseModel>?;
+        } else {
+          throw NoInternetException(
+              message:
+                  "No Internet connection!\n\n This app need internet connection at first load to store exercises for offline usage.");
         }
       } on TypeError catch (e) {
         debugPrint("Error from Hive:${e.toString()}");
@@ -45,9 +49,12 @@ class ExerciseCubit extends Cubit<ExerciseState> {
         }
         exercises = await exerciseRepository.getUserExercises();
         await HiveHelper.saveData('exercises', exercises);
+      } on NoInternetException catch (e) {
+        emit(ExerciseError(e.toString()));
+        debugPrint("Error from Cubit:$e");
       }
 
-      emit(ExerciseLoaded(exercises!));
+      // emit(ExerciseLoaded(exercises!));
     } catch (e) {
       emit(ExerciseError('Failed to fetch exercises : $e'));
       debugPrint("Error from Cubit:$e");

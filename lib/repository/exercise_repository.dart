@@ -35,4 +35,16 @@ class ExerciseRepository {
 
     return allSpeakingTests;
   }
+
+  Future<int> getTotalQuestions() async {
+    final response = await _dio.get(GetApi.listUserExcerciseUrl,
+        options: Options(headers: {'x-api-key': Api.apiKey}),
+        queryParameters: {
+          'userID': 'fa7bad60-97fa-47e2-8791-f96107f62d49',
+          'level': 'A2',
+          'type': 'speaking'
+        });
+    print(response.data['questionsCount'] as int);
+    return response.data['questionsCount'] as int;
+  }
 }

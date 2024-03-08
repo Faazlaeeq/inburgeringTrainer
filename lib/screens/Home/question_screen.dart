@@ -120,7 +120,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                       ),
                       Expanded(
                         child: PageView.builder(
-                            onPageChanged: (index) {
+                            onPageChanged: (index) async {
                               currentPageNotifier.value = index + 1;
                               if (context.read<AudioCubit>().state
                                   is AudioPlaying) {
@@ -137,32 +137,9 @@ class _QuestionScreenState extends State<QuestionScreen> {
                               );
                             }),
                       ),
-
-                      // showPlayer
-                      //     ? Padding(
-                      //         padding:
-                      //             const EdgeInsets.symmetric(horizontal: 25),
-                      //         child: AudioPlayer(
-                      //           source: audioPath!,
-                      //           onDelete: () {
-                      //             setState(() => showPlayer = false);
-                      //           },
-                      //         ),
-                      //       )
-                      //     : Recorder(
-                      //         onStop: (path) {
-                      //           if (kDebugMode)
-                      //             print('Recorded file path: $path');
-                      //           setState(() {
-                      //             audioPath = path;
-                      //             showPlayer = true;
-                      //           });
-                      //         },
-                      //       ),
                       const SizedBox(
                         height: padding2,
                       ),
-
                       PageChangeButtons(
                           state: state,
                           currentIndex: currentIndex,
@@ -199,7 +176,7 @@ class PageChangeButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
           color: MyColors.whiteColor,
           border:
               Border(top: BorderSide(color: MyColors.outlineColor, width: 1))),
@@ -213,12 +190,12 @@ class PageChangeButtons extends StatelessWidget {
                       curve: Curves.easeIn);
                 }
               },
-              icon: Icon(
+              icon: const Icon(
                 Icons.arrow_back_ios,
                 color: MyColors.primaryColor,
                 size: 20,
               )),
-          Spacer(),
+          const Spacer(),
           IconButton(
               onPressed: () {
                 if (currentIndex! < state.questions.length) {
@@ -227,7 +204,7 @@ class PageChangeButtons extends StatelessWidget {
                       curve: Curves.easeIn);
                 }
               },
-              icon: Icon(
+              icon: const Icon(
                 Icons.arrow_forward_ios,
                 color: MyColors.primaryColor,
                 size: 20,
@@ -238,13 +215,32 @@ class PageChangeButtons extends StatelessWidget {
   }
 }
 
-class QuestionPageWidget extends StatelessWidget {
+class QuestionPageWidget extends StatefulWidget {
   const QuestionPageWidget({super.key, required this.index});
   final int index;
+
+  @override
+  State<QuestionPageWidget> createState() => _QuestionPageWidgetState();
+}
+
+class _QuestionPageWidgetState extends State<QuestionPageWidget> {
+  late MicCubit micCubit;
+  @override
+  void initState() {
+    micCubit = context.read<MicCubit>();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    micCubit.micInitial();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => AnswerCubit(id: index.toString()),
+      create: (context) => AnswerCubit(id: widget.index.toString()),
       child: ConstrainedBox(
         constraints: BoxConstraints(maxHeight: height(context) / 1.33),
         child: Column(
@@ -289,16 +285,16 @@ class QuestionPageWidget extends StatelessWidget {
               ),
             ),
             ImagesInRow(
-              index: index,
+              index: widget.index,
             ),
             const SizedBox(
               height: padding2,
             ),
-            ShowTextWidget(index: index),
+            ShowTextWidget(index: widget.index),
             const SizedBox(
               height: padding2,
             ),
-            PlayQuestionButton(index: index),
+            PlayQuestionButton(index: widget.index),
             const SizedBox(
               height: padding2,
             ),
@@ -322,7 +318,7 @@ class QuestionPageWidget extends StatelessWidget {
                     ],
                   );
                 } else {
-                  return YourAnswerWidget(index: index);
+                  return YourAnswerWidget(index: widget.index);
                 }
               },
             ),

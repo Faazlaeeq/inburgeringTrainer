@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:inburgering_trainer/logic/audio_cubit.dart';
 import 'package:inburgering_trainer/logic/bloc/speech_bloc.dart';
+import 'package:inburgering_trainer/logic/cubit/activity_cubit.dart';
 import 'package:inburgering_trainer/logic/cubit/answer_cubit.dart';
 import 'package:inburgering_trainer/logic/excercise_cubit.dart';
 import 'package:inburgering_trainer/logic/helpers/hivehelper.dart';
@@ -36,6 +37,7 @@ class MainApp extends StatelessWidget {
         BlocProvider(create: (context) => AudioCubit()),
         BlocProvider(create: (context) => MicCubit()),
         BlocProvider(create: (context) => SpeechBloc()),
+        BlocProvider(create: (context) => ActivityCubit()),
         // BlocProvider(
         //   create: (context) => AnswerCubit(),
         // )

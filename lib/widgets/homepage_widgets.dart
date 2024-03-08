@@ -26,11 +26,20 @@ class PlayQuestionButton extends StatefulWidget {
 class _PlayQuestionButtonState extends State<PlayQuestionButton> {
   @override
   void initState() {
-    QuestionState state = context.read<QuestionCubit>().state;
-    AudioState audioState = context.read<AudioCubit>().state;
+    debugPrint('PlayQuestionButton initState called');
+    if (widget.isQuestion) {
+      QuestionState state = context.read<QuestionCubit>().state;
+      AudioState audioState = context.read<AudioCubit>().state;
 
-    if (state is QuestionLoaded && audioState is AudioInitial) {
-      if (widget.isQuestion) {
+      if (state is QuestionLoaded &&
+          (audioState is AudioInitial || audioState is AudioStopped)) {
+        if (widget.isQuestion) {
+          context.read<AudioCubit>().playAudio(
+              state.questions[widget.index].questionData.questionSound,
+              state.questions[widget.index].id);
+        }
+      } else if (state is QuestionLoaded && (audioState is AudioPlaying)) {
+        context.read<AudioCubit>().stopAudio();
         context.read<AudioCubit>().playAudio(
             state.questions[widget.index].questionData.questionSound,
             state.questions[widget.index].id);
@@ -199,7 +208,9 @@ class ImagesInRow extends StatelessWidget {
                       context.read<AnswerCubit>().postAnswer(
                           state.questions[index].questionData.questionText,
                           answerState.speech,
-                          "63d97bb2-5678-47a2-8ebc-b1f84b27e5d6");
+                          "63d97bb2-5678-47a2-8ebc-b1f84b27e5d6",
+                          state.questions[index].id,
+                          state.exerciseId);
                     }
                   },
                   child: const SizedBox(),

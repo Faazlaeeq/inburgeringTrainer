@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 class MyColors {
   static const Color whiteColor = CupertinoColors.white;
+  static Color blackLightColor = Colors.black.withOpacity(0.8);
   static Color shadowColor = Colors.black.withOpacity(0.16);
   static const Color accentColor = Color(0xFFFFF4F3);
   static const Color primaryColor = Color(0xFFFF6C2A);

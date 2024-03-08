@@ -1,6 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:inburgering_trainer/logic/bloc/speech_bloc.dart';
+import 'package:inburgering_trainer/logic/helpers/record_helper.dart';
+import 'package:inburgering_trainer/models/answer_record.dart';
 import 'package:inburgering_trainer/repository/answer_repository.dart';
 import 'package:inburgering_trainer/utils/imports.dart';
 
@@ -15,11 +17,20 @@ class AnswerCubit extends HydratedCubit<AnswerState> {
     emit(AnswerInitial());
   }
 
-  Future<void> postAnswer(String question, String answer, String userID) async {
+  Future<void> postAnswer(String question, String answer, String userID,
+      String exerciseId, String questionId) async {
     emit(AnswerLoading());
     try {
       final response =
           await answerRepository.postAnswer(question, answer, userID);
+
+      RecordHelper answerRecordHelper = RecordHelper();
+      await answerRecordHelper.initialize();
+      answerRecordHelper.addAnswerRecord(AnswerRecord(
+          questionId: questionId,
+          exerciseId: exerciseId,
+          answerGiven: true,
+          userId: userID));
       emit(AnswerLoaded(response["correction"] as String, userAnswer: answer));
     } catch (e) {
       emit(AnswerError(e.toString()));

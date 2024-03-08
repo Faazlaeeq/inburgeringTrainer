@@ -3,8 +3,11 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:inburgering_trainer/logic/bloc/speech_bloc.dart';
+import 'package:inburgering_trainer/logic/helpers/internet_helper.dart';
 import 'package:inburgering_trainer/logic/mic_cubit.dart';
+import 'package:inburgering_trainer/theme/colors.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
@@ -33,28 +36,42 @@ class SpeechListner {
     speechBloc.add(EmptySpeech());
 
     BlocProvider.of<MicCubit>(context).micActive();
+
     SpeechListenOptions options = SpeechListenOptions(
         partialResults: false,
         autoPunctuation: true,
         enableHapticFeedback: true,
         listenMode: ListenMode.dictation,
         cancelOnError: true);
-    await speech
-        .listen(
-      listenOptions: options,
-      onResult: onResultHandler,
-      listenFor: Duration(seconds: 20),
-      localeId: 'nl_NL',
-      onSoundLevelChange: (level) => print('Sound level $level'),
-    )
-        .catchError((e) {
-      print(e);
-      BlocProvider.of<MicCubit>(context).micError();
-    });
+    final bool netStatus = await InternetHelper.checkInternetConnectivity();
+    if (netStatus) {
+      await speech
+          .listen(
+        listenOptions: options,
+        onResult: onResultHandler,
+        listenFor: const Duration(seconds: 10),
+        localeId: 'nl_NL',
+      )
+          .catchError((e) {
+        debugPrint(e);
+        BlocProvider.of<MicCubit>(context).micError();
+      });
+    } else {
+      Fluttertoast.showToast(
+          msg:
+              "Seems like you device is not connected to the internet.Please connect to the internet and try again.",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: MyColors.blackLightColor,
+          textColor: MyColors.whiteColor,
+          fontSize: 16.0);
+      BlocProvider.of<MicCubit>(context).micInactive();
+    }
   }
 
   void stopListening() async {
-    print("faaz:stopListening Called");
+    debugPrint("faaz:stopListening Called");
     await speech.stop();
     if (context.mounted) BlocProvider.of<MicCubit>(context).micInactive();
   }
@@ -64,9 +81,9 @@ class SpeechListner {
         .initialize(
       finalTimeout: const Duration(seconds: 20),
       onStatus: (status) {
-        print("faaz:" + status);
+        debugPrint("faaz:$status");
         if (status == 'notListening' || status == 'done') {
-          print("faaz: in here");
+          debugPrint("faaz: in here");
           stopListening();
         }
       },

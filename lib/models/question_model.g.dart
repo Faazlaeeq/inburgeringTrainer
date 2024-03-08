@@ -21,13 +21,14 @@ class QuestionModelAdapter extends TypeAdapter<QuestionModel> {
       questionData: fields[1] as QuestionData,
       questionType: fields[2] as String,
       type: fields[3] as String,
+      lastFetched: fields[4] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, QuestionModel obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -35,7 +36,9 @@ class QuestionModelAdapter extends TypeAdapter<QuestionModel> {
       ..writeByte(2)
       ..write(obj.questionType)
       ..writeByte(3)
-      ..write(obj.type);
+      ..write(obj.type)
+      ..writeByte(4)
+      ..write(obj.lastFetched);
   }
 
   @override

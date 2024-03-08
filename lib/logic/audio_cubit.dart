@@ -52,7 +52,7 @@ class AudioCubit extends Cubit<AudioState> {
     emit(AudioLoading());
     try {
       final file = await base64ToAudio(base64String, exerciseId);
-      print("Playing audio");
+      debugPrint("Playing audio");
 
       await audioPlayer.play(DeviceFileSource(file.path));
 
@@ -62,26 +62,26 @@ class AudioCubit extends Cubit<AudioState> {
         emit(AudioStopped());
       });
     } catch (e) {
-      print("Error playing audio: $e");
+      debugPrint("Error playing audio: $e");
       emit(AudioError(e.toString()));
     }
   }
 
-  void pauseAudio() {
-    audioPlayer.pause();
-    print("Audio Paused");
+  void pauseAudio() async {
+    await audioPlayer.pause();
+    debugPrint("Audio Paused");
     emit(AudioPaused());
   }
 
-  void stopAudio() {
-    audioPlayer.stop();
-    print("Audio Stopped");
+  void stopAudio() async {
+    await audioPlayer.stop();
+    debugPrint("Audio Stopped");
     emit(AudioStopped());
   }
 
-  void resumeAudio() {
-    audioPlayer.resume();
-    print("Audio Resumed");
+  void resumeAudio() async {
+    await audioPlayer.resume();
+    debugPrint("Audio Resumed");
     emit(AudioPlaying());
   }
 }
