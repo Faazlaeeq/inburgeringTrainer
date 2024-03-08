@@ -1,5 +1,8 @@
+import 'package:inburgering_trainer/logic/cubit/answer_cubit.dart';
+import 'package:inburgering_trainer/logic/helpers/record_helper.dart';
 import 'package:inburgering_trainer/screens/Home/question_screen.dart';
 import 'package:inburgering_trainer/theme/colors.dart';
+import 'package:inburgering_trainer/utils/imports.dart';
 import 'package:inburgering_trainer/utils/sizes.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -9,12 +12,14 @@ class MyCard extends StatefulWidget {
       required this.exerciseName,
       required this.questionCompleted,
       required this.categoryName,
-      required this.exerciseId});
+      required this.exerciseId,
+      this.isSelected = false});
 
   final String exerciseName;
   final String questionCompleted;
   final String categoryName;
   final String exerciseId;
+  final bool isSelected;
 
   @override
   State<MyCard> createState() => _MyCardState();
@@ -25,6 +30,7 @@ class _MyCardState extends State<MyCard> {
 
   @override
   Widget build(BuildContext context) {
+    isSelected = widget.isSelected;
     return GestureDetector(
       onTap: () async {
         Navigator.of(context).push(
@@ -56,19 +62,26 @@ class _MyCardState extends State<MyCard> {
                 widget.exerciseName,
               ),
             ),
-            Positioned(
-                bottom: 0,
-                right: 0,
-                child: Text(
-                  widget.questionCompleted,
-                  style: CupertinoTheme.of(context)
-                      .textTheme
-                      .textStyle
-                      .copyWith(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                          color: MyColors.primaryColor),
-                )),
+            BlocBuilder<AnswerCubit, AnswerState>(
+              builder: (context, state) {
+                RecordHelper recordHelper = RecordHelper();
+                int? questionDone = recordHelper
+                    .getTotalAnswerCountByExercise(widget.exerciseId);
+                return Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: Text(
+                      "${questionDone ?? 0}/ ${widget.questionCompleted}",
+                      style: CupertinoTheme.of(context)
+                          .textTheme
+                          .textStyle
+                          .copyWith(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                              color: MyColors.primaryColor),
+                    ));
+              },
+            ),
           ],
         ),
       ),

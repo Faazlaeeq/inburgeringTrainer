@@ -56,8 +56,12 @@ class YourAnswerWidget extends StatelessWidget {
                           .copyWith(color: MyColors.blackColor, fontSize: 14),
                     );
                   } else if (state is AnswerError) {
-                    return MyErrorWidget(
-                      message: state.error,
+                    return Text(
+                      state.error,
+                      style: CupertinoTheme.of(context)
+                          .textTheme
+                          .textStyle
+                          .copyWith(color: MyColors.blackColor, fontSize: 14),
                     );
                   } else {
                     return const SizedBox();

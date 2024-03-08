@@ -1,4 +1,5 @@
 import 'package:hive_flutter/adapters.dart';
+import 'package:inburgering_trainer/models/activity_model.dart';
 import 'package:inburgering_trainer/models/answer_record.dart';
 import 'package:inburgering_trainer/models/exercise_model.dart';
 import 'package:inburgering_trainer/models/question_model.dart';
@@ -12,6 +13,7 @@ class HiveHelper {
     Hive.registerAdapter(QuestionModelAdapter());
     Hive.registerAdapter(QuestionDataAdapter());
     Hive.registerAdapter(AnswerRecordAdapter());
+    Hive.registerAdapter(ActivityModelAdapter());
 
     await Hive.openBox(boxName);
   }

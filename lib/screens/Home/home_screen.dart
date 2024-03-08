@@ -2,6 +2,7 @@ import 'dart:core';
 
 import 'package:flutter/material.dart';
 import 'package:inburgering_trainer/logic/cubit/activity_cubit.dart';
+import 'package:inburgering_trainer/logic/cubit/answer_cubit.dart';
 import 'package:inburgering_trainer/logic/excercise_cubit.dart';
 import 'package:inburgering_trainer/logic/helpers/record_helper.dart';
 import 'package:inburgering_trainer/models/exercise_model.dart';
@@ -205,21 +206,47 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class CardsGridwithHeading extends StatelessWidget {
+class CardsGridwithHeading extends StatefulWidget {
   const CardsGridwithHeading({super.key, required this.exercises});
   final List<ExerciseModel> exercises;
 
   @override
+  State<CardsGridwithHeading> createState() => _CardsGridwithHeadingState();
+}
+
+class _CardsGridwithHeadingState extends State<CardsGridwithHeading>
+    with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      setState(() {});
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     List<List<ExerciseModel>> exercisesByCategory = groupBy(
-      exercises,
+      widget.exercises,
       (ExerciseModel exercise) => exercise.categoryName,
     ).values.toList();
+
     int exerciseIndex = -1;
 
     return SliverList(
       delegate: SliverChildBuilderDelegate(
-          childCount: exercisesByCategory.length, (context, index) {
+          childCount: exercisesByCategory.length, (ctx, index) {
         exerciseIndex++;
 
         return Column(
@@ -242,14 +269,19 @@ class CardsGridwithHeading extends StatelessWidget {
                 childAspectRatio: 1.3,
               ),
               itemBuilder: (context, index2) {
+                RecordHelper recordHelper = RecordHelper();
+                int? questionDone = recordHelper.getTotalAnswerCountByExercise(
+                    exercisesByCategory[index][index2].id);
+
                 return MyCard(
                     exerciseId: exercisesByCategory[index][index2].id,
                     categoryName:
                         exercisesByCategory[index][index2].exerciseName,
                     exerciseName:
                         exercisesByCategory[index][index2].exerciseName,
+                    isSelected: (questionDone != null && questionDone > 0),
                     questionCompleted:
-                        "0/${exercisesByCategory[index][index2].questionsCount.toString()}");
+                        "${exercisesByCategory[index][index2].questionsCount.toString()}");
               },
               itemCount: exercisesByCategory[index].length,
             ),

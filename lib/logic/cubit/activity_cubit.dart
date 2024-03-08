@@ -17,6 +17,7 @@ class ActivityCubit extends Cubit<ActivityState> {
       emit(ActivityLoaded(activity));
     } catch (e) {
       emit(ActivityError(e.toString()));
+      debugPrint(e.toString());
     }
   }
 }

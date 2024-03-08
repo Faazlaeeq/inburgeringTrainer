@@ -73,7 +73,6 @@ class SpeechListner {
   void stopListening() async {
     debugPrint("faaz:stopListening Called");
     await speech.stop();
-    if (context.mounted) BlocProvider.of<MicCubit>(context).micInactive();
   }
 
   void speechInit() {
@@ -85,6 +84,7 @@ class SpeechListner {
         if (status == 'notListening' || status == 'done') {
           debugPrint("faaz: in here");
           stopListening();
+          BlocProvider.of<MicCubit>(context).micInitial();
         }
       },
     )

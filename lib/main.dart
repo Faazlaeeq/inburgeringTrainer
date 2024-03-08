@@ -8,6 +8,7 @@ import 'package:inburgering_trainer/logic/cubit/activity_cubit.dart';
 import 'package:inburgering_trainer/logic/cubit/answer_cubit.dart';
 import 'package:inburgering_trainer/logic/excercise_cubit.dart';
 import 'package:inburgering_trainer/logic/helpers/hivehelper.dart';
+import 'package:inburgering_trainer/logic/helpers/record_helper.dart';
 import 'package:inburgering_trainer/logic/mic_cubit.dart';
 import 'package:inburgering_trainer/logic/question_cubit.dart';
 import 'package:inburgering_trainer/repository/question_repository.dart';
@@ -21,6 +22,7 @@ void main() async {
   HydratedBloc.storage = await HydratedStorage.build(
       storageDirectory: await getApplicationDocumentsDirectory());
   await HiveHelper.initHive();
+  await RecordHelper().initialize();
   runApp(MainApp());
 }
 
@@ -38,9 +40,9 @@ class MainApp extends StatelessWidget {
         BlocProvider(create: (context) => MicCubit()),
         BlocProvider(create: (context) => SpeechBloc()),
         BlocProvider(create: (context) => ActivityCubit()),
-        // BlocProvider(
-        //   create: (context) => AnswerCubit(),
-        // )
+        BlocProvider(
+          create: (context) => AnswerCubit(),
+        )
       ],
       child: MaterialApp(
         home: CupertinoApp(

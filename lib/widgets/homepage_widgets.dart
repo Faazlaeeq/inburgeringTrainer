@@ -209,8 +209,8 @@ class ImagesInRow extends StatelessWidget {
                           state.questions[index].questionData.questionText,
                           answerState.speech,
                           "63d97bb2-5678-47a2-8ebc-b1f84b27e5d6",
-                          state.questions[index].id,
-                          state.exerciseId);
+                          state.exerciseId,
+                          state.questions[index].id);
                     }
                   },
                   child: const SizedBox(),

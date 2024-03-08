@@ -33,7 +33,8 @@ class AnswerCubit extends HydratedCubit<AnswerState> {
           userId: userID));
       emit(AnswerLoaded(response["correction"] as String, userAnswer: answer));
     } catch (e) {
-      emit(AnswerError(e.toString()));
+      debugPrint(e.toString());
+      emit(AnswerError("Something went wrong, please try again later"));
     }
   }
 

@@ -4,6 +4,7 @@ import 'package:dio/io.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:inburgering_trainer/logic/audio_cubit.dart';
+import 'package:inburgering_trainer/logic/cubit/activity_cubit.dart';
 import 'package:inburgering_trainer/logic/cubit/answer_cubit.dart';
 import 'package:inburgering_trainer/logic/mic_cubit.dart';
 import 'package:inburgering_trainer/logic/question_cubit.dart';
@@ -96,27 +97,31 @@ class _QuestionScreenState extends State<QuestionScreen> {
                       ValueListenableBuilder<int>(
                         valueListenable: currentPageNotifier,
                         builder: (context, currentPage, _) {
-                          return Text(
-                            "Progress ($currentPage/${state.questions.length})",
-                            style: CupertinoTheme.of(context)
-                                .textTheme
-                                .textStyle
-                                .copyWith(
-                                    color: MyColors.lightBlackColor,
-                                    fontSize: 14),
-                          );
+                          return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Progress ($currentPage/${state.questions.length})",
+                                  style: CupertinoTheme.of(context)
+                                      .textTheme
+                                      .textStyle
+                                      .copyWith(
+                                          color: MyColors.lightBlackColor,
+                                          fontSize: 14),
+                                ),
+                                Padding(
+                                  padding: paddingSymmetricVertical2,
+                                  child: LinearProgressIndicator(
+                                    value: currentPage / state.questions.length,
+                                    minHeight: 6,
+                                    backgroundColor: MyColors.outlineColor,
+                                    valueColor: const AlwaysStoppedAnimation(
+                                        MyColors.primaryColor),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                )
+                              ]);
                         },
-                      ),
-                      Padding(
-                        padding: paddingSymmetricVertical2,
-                        child: LinearProgressIndicator(
-                          value: 0.5,
-                          minHeight: 6,
-                          backgroundColor: MyColors.outlineColor,
-                          valueColor: const AlwaysStoppedAnimation(
-                              MyColors.primaryColor),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
                       ),
                       Expanded(
                         child: PageView.builder(
@@ -243,86 +248,94 @@ class _QuestionPageWidgetState extends State<QuestionPageWidget> {
       create: (context) => AnswerCubit(id: widget.index.toString()),
       child: ConstrainedBox(
         constraints: BoxConstraints(maxHeight: height(context) / 1.33),
-        child: Column(
-          children: [
-            const SizedBox(
-              height: 10,
-            ),
-            Text(
-              "Please listen to the voice",
-              style: CupertinoTheme.of(context).textTheme.textStyle.copyWith(
-                  color: MyColors.blackColor,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(
-              height: padding1,
-            ),
-            RichText(
-              text: TextSpan(
-                style: CupertinoTheme.of(context).textTheme.textStyle.copyWith(
-                      color: MyColors.blackColor,
-                      fontSize: 12,
-                    ),
-                children: <TextSpan>[
-                  const TextSpan(
-                      text:
-                          'The voice is related to images below. Use the image cues for framing your answer. '),
-                  TextSpan(
-                    text: 'More details',
-                    style:
-                        CupertinoTheme.of(context).textTheme.textStyle.copyWith(
-                              color: MyColors.primaryColor,
-                              fontWeight: FontWeight.bold,
-                            ), // Change color
-                    recognizer: TapGestureRecognizer()
-                      ..onTap = () {
-                        print('More details tapped');
-                        // Navigate or do something else
-                      },
-                  ),
-                ],
+        child: SingleChildScrollView(
+          child: ListView(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            children: [
+              const SizedBox(
+                height: 10,
               ),
-            ),
-            ImagesInRow(
-              index: widget.index,
-            ),
-            const SizedBox(
-              height: padding2,
-            ),
-            ShowTextWidget(index: widget.index),
-            const SizedBox(
-              height: padding2,
-            ),
-            PlayQuestionButton(index: widget.index),
-            const SizedBox(
-              height: padding2,
-            ),
-            const Spacer(),
-            BlocBuilder<AnswerCubit, AnswerState>(
-              builder: (context, state) {
-                if (state is AnswerInitial) {
-                  return Column(
-                    children: [
-                      const Center(
-                          child: Text(
-                        "Tap to Speak",
-                        style:
-                            TextStyle(color: MyColors.blackColor, fontSize: 14),
-                      )),
-                      TextButton(
-                          onPressed: () {
-                            MicWidget().listen(context);
-                          },
-                          child: MicWidget()),
-                    ],
-                  );
-                } else {
-                  return YourAnswerWidget(index: widget.index);
-                }
-              },
-            ),
-          ],
+              Text(
+                "Please listen to the voice",
+                style: CupertinoTheme.of(context).textTheme.textStyle.copyWith(
+                    color: MyColors.blackColor,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(
+                height: padding1,
+              ),
+              RichText(
+                text: TextSpan(
+                  style:
+                      CupertinoTheme.of(context).textTheme.textStyle.copyWith(
+                            color: MyColors.blackColor,
+                            fontSize: 12,
+                          ),
+                  children: <TextSpan>[
+                    const TextSpan(
+                        text:
+                            'The voice is related to images below. Use the image cues for framing your answer. '),
+                    TextSpan(
+                      text: 'More details',
+                      style: CupertinoTheme.of(context)
+                          .textTheme
+                          .textStyle
+                          .copyWith(
+                            color: MyColors.primaryColor,
+                            fontWeight: FontWeight.bold,
+                          ), // Change color
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          print('More details tapped');
+                          // Navigate or do something else
+                        },
+                    ),
+                  ],
+                ),
+              ),
+              ImagesInRow(
+                index: widget.index,
+              ),
+              const SizedBox(
+                height: padding2,
+              ),
+              ShowTextWidget(index: widget.index),
+              const SizedBox(
+                height: padding2,
+              ),
+              PlayQuestionButton(index: widget.index),
+              const SizedBox(
+                height: padding2,
+              ),
+              const Spacer(),
+              BlocBuilder<AnswerCubit, AnswerState>(
+                builder: (context, state) {
+                  if (state is AnswerInitial) {
+                    return Column(
+                      children: [
+                        const Center(
+                            child: Text(
+                          "Tap to Speak",
+                          style: TextStyle(
+                              color: MyColors.blackColor, fontSize: 14),
+                        )),
+                        TextButton(
+                            onPressed: () {
+                              MicWidget().listen(context);
+                            },
+                            child: MicWidget()),
+                      ],
+                    );
+                  } else {
+                    // context.read<ActivityCubit>().fetchActivity();
+                    return YourAnswerWidget(index: widget.index);
+                  }
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

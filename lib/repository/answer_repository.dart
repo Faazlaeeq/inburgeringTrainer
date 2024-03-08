@@ -8,7 +8,7 @@ class AnswerRepository {
 
   Future<Map<String, String>> postAnswer(
       String question, String answer, String userID) async {
-    final url = PostApi.sendAnswerUrl;
+    const url = PostApi.sendAnswerUrl;
     final data = {
       'question': question,
       'text': answer,
