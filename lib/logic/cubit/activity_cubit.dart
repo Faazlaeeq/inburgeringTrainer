@@ -8,11 +8,15 @@ class ActivityCubit extends Cubit<ActivityState> {
 
   Future<void> fetchActivity() async {
     try {
+      debugPrint("faaz1: fetch activity called!");
       emit(ActivityLoading());
+      debugPrint("faaz1: fetch activity loading called!");
+
       await recordHelper.initialize();
       ActivityModel activity = ActivityModel(
           totalQuestions: await recordHelper.getTotalQuestion(),
           totalAnswered: recordHelper.getTotalAnswerCount());
+      debugPrint("faaz1: fetch activity loaded called!");
 
       emit(ActivityLoaded(activity));
     } catch (e) {

@@ -1,3 +1,4 @@
+import 'package:inburgering_trainer/logic/cubit/activity_cubit.dart';
 import 'package:inburgering_trainer/logic/cubit/answer_cubit.dart';
 import 'package:inburgering_trainer/logic/helpers/record_helper.dart';
 import 'package:inburgering_trainer/screens/Home/question_screen.dart';
@@ -62,24 +63,28 @@ class _MyCardState extends State<MyCard> {
                 widget.exerciseName,
               ),
             ),
-            BlocBuilder<AnswerCubit, AnswerState>(
+            BlocBuilder<ActivityCubit, ActivityState>(
               builder: (context, state) {
-                RecordHelper recordHelper = RecordHelper();
-                int? questionDone = recordHelper
-                    .getTotalAnswerCountByExercise(widget.exerciseId);
-                return Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: Text(
-                      "${questionDone ?? 0}/ ${widget.questionCompleted}",
-                      style: CupertinoTheme.of(context)
-                          .textTheme
-                          .textStyle
-                          .copyWith(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
-                              color: MyColors.primaryColor),
-                    ));
+                if (state is ActivityLoaded) {
+                  RecordHelper recordHelper = RecordHelper();
+                  int? questionDone = recordHelper
+                      .getTotalAnswerCountByExercise(widget.exerciseId);
+                  return Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: Text(
+                        "${questionDone ?? 0}/ ${widget.questionCompleted}",
+                        style: CupertinoTheme.of(context)
+                            .textTheme
+                            .textStyle
+                            .copyWith(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                                color: MyColors.primaryColor),
+                      ));
+                }
+                return const Positioned(
+                    bottom: 0, right: 0, child: CupertinoActivityIndicator());
               },
             ),
           ],

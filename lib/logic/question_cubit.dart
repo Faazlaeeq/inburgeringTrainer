@@ -1,5 +1,6 @@
 import 'package:inburgering_trainer/logic/helpers/hivehelper.dart';
 import 'package:inburgering_trainer/logic/helpers/internet_helper.dart';
+import 'package:inburgering_trainer/logic/helpers/record_helper.dart';
 import 'package:inburgering_trainer/models/question_model.dart';
 import 'package:inburgering_trainer/repository/question_repository.dart';
 import 'package:inburgering_trainer/utils/imports.dart';
@@ -82,7 +83,21 @@ class QuestionLoading extends QuestionState {}
 class QuestionLoaded extends QuestionState {
   final List<QuestionModel> questions;
   final String exerciseId;
-  QuestionLoaded(this.questions, {required this.exerciseId});
+  QuestionLoaded(this.questions, {required this.exerciseId}) {
+    RecordHelper recordHelper = RecordHelper();
+    questions.sort((a, b) {
+      bool aAnswered = recordHelper.getAnswerGiven(a.id);
+      bool bAnswered = recordHelper.getAnswerGiven(b.id);
+
+      if (aAnswered && !bAnswered) {
+        return 1;
+      } else if (!aAnswered && bAnswered) {
+        return -1;
+      } else {
+        return 0;
+      }
+    });
+  }
 }
 
 class QuestionError extends QuestionState {

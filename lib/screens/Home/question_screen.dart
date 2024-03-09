@@ -1,13 +1,16 @@
 import 'dart:io';
 
+import 'package:collection/collection.dart';
 import 'package:dio/io.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:inburgering_trainer/logic/audio_cubit.dart';
 import 'package:inburgering_trainer/logic/cubit/activity_cubit.dart';
 import 'package:inburgering_trainer/logic/cubit/answer_cubit.dart';
+import 'package:inburgering_trainer/logic/helpers/record_helper.dart';
 import 'package:inburgering_trainer/logic/mic_cubit.dart';
 import 'package:inburgering_trainer/logic/question_cubit.dart';
+import 'package:inburgering_trainer/models/question_model.dart';
 import 'package:inburgering_trainer/theme/colors.dart';
 import 'package:inburgering_trainer/utils/sizes.dart';
 import 'package:inburgering_trainer/widgets/mywidgets.dart';
@@ -27,7 +30,8 @@ class QuestionScreen extends StatefulWidget {
 class _QuestionScreenState extends State<QuestionScreen> {
   // QuestionCubit questionCubit = QuestionCubit(QuestionRepository());
   late AudioCubit _audioCubit;
-  late AnswerCubit _answerCubit;
+  // late AnswerCubit _answerCubit;
+  late ActivityCubit _activityCubit;
   late MicCubit _micCubit;
   String? audioPath;
   String? path;
@@ -42,16 +46,18 @@ class _QuestionScreenState extends State<QuestionScreen> {
     _audioCubit = context.read<AudioCubit>();
     // _answerCubit = context.read<AnswerCubit>();
     _micCubit = context.read<MicCubit>();
+    _activityCubit = context.read<ActivityCubit>();
     context.read<QuestionCubit>().getQuestions(exerciseId: widget.exerciseId);
     super.initState();
     currentIndex = pageController.initialPage + 1;
   }
 
   @override
-  void dispose() {
-    _audioCubit.stopAudio(); // Stop the audio
+  void dispose() async {
+    _audioCubit.stopAudio();
     // _answerCubit.clearAnswer();
     _micCubit.micInitial();
+    await _activityCubit.fetchActivity();
     super.dispose();
   }
 
@@ -288,7 +294,7 @@ class _QuestionPageWidgetState extends State<QuestionPageWidget> {
                           ), // Change color
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
-                          print('More details tapped');
+                          debugPrint('More details tapped');
                           // Navigate or do something else
                         },
                     ),

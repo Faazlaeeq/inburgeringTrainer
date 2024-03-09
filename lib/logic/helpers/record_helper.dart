@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:inburgering_trainer/logic/helpers/hivehelper.dart';
 import 'package:inburgering_trainer/logic/helpers/internet_helper.dart';
@@ -18,7 +20,7 @@ class RecordHelper {
     }
   }
 
-  Future<int> getTotalQuestion() async {
+  FutureOr<int> getTotalQuestion() async {
     int? totCacheQues = await HiveHelper.getData("totalQuestion");
     bool netStatus = await InternetHelper.checkInternetConnectivity();
     if (totCacheQues != null) {
@@ -41,16 +43,22 @@ class RecordHelper {
   }
 
   void addAnswerRecord(AnswerRecord answerRecord) {
-    if (!answerRecords.contains(answerRecord)) {
-      debugPrint("AnswerRecord added to Hive: ${answerRecord.questionId}");
-      answerRecords.forEach((element) {
-        debugPrint("AnswerRecord: ${element.questionId}");
-      });
-      answerRecords.add(answerRecord);
+    debugPrint("AnswerRecord added to Hive: ${answerRecord.questionId}");
+    for (var element in answerRecords) {
+      debugPrint("AnswerRecord: ${element.questionId}");
     }
-    HiveHelper.saveData("answerRecord", answerRecords);
+    if (!answerRecords
+        .any((element) => element.questionId == answerRecord.questionId)) {
+      answerRecords.add(answerRecord);
+      debugPrint(
+          "AnswerRecord added to Hive: $answerRecord and $answerRecords");
+      HiveHelper.saveData("answerRecord", answerRecords);
+    }
     // HiveHelper.deleteData("answerRecord");
-    debugPrint("AnswerRecord added to Hive: $answerRecord and $answerRecords");
+  }
+
+  void clearRecord() {
+    HiveHelper.deleteData("answerRecord");
   }
 
   List<AnswerRecord> getAnswerbyExercise(String exerciseId) {
@@ -60,9 +68,21 @@ class RecordHelper {
   }
 
   bool getAnswerGiven(String questionId) {
-    return answerRecords
-        .firstWhere((element) => element.questionId == questionId)
-        .answerGiven;
+    debugPrint("faaz: record is empty ${answerRecords == []} $answerRecords");
+    if (answerRecords.isNotEmpty) {
+      return answerRecords
+          .firstWhere(
+            (element) => element.questionId == questionId,
+            orElse: () => AnswerRecord(
+                userId: "user",
+                exerciseId: "kuch bhi",
+                questionId: questionId,
+                answerGiven: false),
+          )
+          .answerGiven;
+    } else {
+      return false;
+    }
   }
 
   int getTotalAnswerCount() {
