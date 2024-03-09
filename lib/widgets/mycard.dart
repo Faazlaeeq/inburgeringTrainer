@@ -31,7 +31,44 @@ class _MyCardState extends State<MyCard> {
 
   @override
   Widget build(BuildContext context) {
-    isSelected = widget.isSelected;
+    return BlocBuilder<ActivityCubit, ActivityState>(
+      builder: (context, state) {
+        RecordHelper recordHelper = RecordHelper();
+        int? questionDone =
+            recordHelper.getTotalAnswerCountByExercise(widget.exerciseId);
+        if (questionDone != null && questionDone > 0) {
+          isSelected = true;
+        }
+        if (state is AnswerLoaded) {
+          return CardwithClick(
+              widget: widget,
+              isSelected: isSelected,
+              questionDone: questionDone);
+        } else {
+          return CardwithClick(
+              widget: widget,
+              isSelected: isSelected,
+              questionDone: questionDone);
+        }
+      },
+    );
+  }
+}
+
+class CardwithClick extends StatelessWidget {
+  const CardwithClick({
+    super.key,
+    required this.widget,
+    required this.isSelected,
+    required this.questionDone,
+  });
+
+  final MyCard widget;
+  final bool isSelected;
+  final int? questionDone;
+
+  @override
+  Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
         Navigator.of(context).push(
@@ -63,30 +100,19 @@ class _MyCardState extends State<MyCard> {
                 widget.exerciseName,
               ),
             ),
-            BlocBuilder<ActivityCubit, ActivityState>(
-              builder: (context, state) {
-                if (state is ActivityLoaded) {
-                  RecordHelper recordHelper = RecordHelper();
-                  int? questionDone = recordHelper
-                      .getTotalAnswerCountByExercise(widget.exerciseId);
-                  return Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Text(
-                        "${questionDone ?? 0}/ ${widget.questionCompleted}",
-                        style: CupertinoTheme.of(context)
-                            .textTheme
-                            .textStyle
-                            .copyWith(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
-                                color: MyColors.primaryColor),
-                      ));
-                }
-                return const Positioned(
-                    bottom: 0, right: 0, child: CupertinoActivityIndicator());
-              },
-            ),
+            Positioned(
+                bottom: 0,
+                right: 0,
+                child: Text(
+                  "${questionDone ?? 0}/ ${widget.questionCompleted}",
+                  style: CupertinoTheme.of(context)
+                      .textTheme
+                      .textStyle
+                      .copyWith(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                          color: MyColors.primaryColor),
+                )),
           ],
         ),
       ),

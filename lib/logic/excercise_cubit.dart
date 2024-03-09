@@ -25,7 +25,8 @@ class ExerciseCubit extends Cubit<ExerciseState> {
           exercises = exList.map((item) => item as ExerciseModel).toList();
           debugPrint('exercises from hive:${exercises.length}');
           emit(ExerciseLoaded(exercises));
-        } else if (netStatus) {
+        }
+        if (netStatus) {
           if (exercises == null) {
             exercises = await exerciseRepository.getUserExercises();
             await HiveHelper.saveData('exercises', exercises);
@@ -33,6 +34,8 @@ class ExerciseCubit extends Cubit<ExerciseState> {
             return;
           } else if (exercises != await exerciseRepository.getUserExercises()) {
             exercises = await exerciseRepository.getUserExercises();
+            emit(ExerciseLoaded(exercises));
+
             await HiveHelper.saveData('exercises', exercises);
           }
           exercises =

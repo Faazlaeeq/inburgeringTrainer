@@ -5,9 +5,12 @@ import 'package:dio/io.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:inburgering_trainer/logic/audio_cubit.dart';
+import 'package:inburgering_trainer/logic/bloc/speech_bloc.dart';
 import 'package:inburgering_trainer/logic/cubit/activity_cubit.dart';
 import 'package:inburgering_trainer/logic/cubit/answer_cubit.dart';
 import 'package:inburgering_trainer/logic/helpers/record_helper.dart';
+import 'package:inburgering_trainer/logic/helpers/speech_listener.dart';
+import 'package:inburgering_trainer/logic/helpers/speech_listener.dart';
 import 'package:inburgering_trainer/logic/mic_cubit.dart';
 import 'package:inburgering_trainer/logic/question_cubit.dart';
 import 'package:inburgering_trainer/models/question_model.dart';
@@ -53,11 +56,11 @@ class _QuestionScreenState extends State<QuestionScreen> {
   }
 
   @override
-  void dispose() async {
+  void dispose() {
     _audioCubit.stopAudio();
     // _answerCubit.clearAnswer();
     _micCubit.micInitial();
-    await _activityCubit.fetchActivity();
+    _activityCubit.fetchActivity();
     super.dispose();
   }
 
@@ -144,6 +147,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
                               return SingleChildScrollView(
                                 child: QuestionPageWidget(
                                   index: index,
+                                  questionId: state.questions[index].id,
                                 ),
                               );
                             }),
@@ -227,8 +231,10 @@ class PageChangeButtons extends StatelessWidget {
 }
 
 class QuestionPageWidget extends StatefulWidget {
-  const QuestionPageWidget({super.key, required this.index});
+  const QuestionPageWidget(
+      {super.key, required this.index, required this.questionId});
   final int index;
+  final String questionId;
 
   @override
   State<QuestionPageWidget> createState() => _QuestionPageWidgetState();
@@ -236,9 +242,16 @@ class QuestionPageWidget extends StatefulWidget {
 
 class _QuestionPageWidgetState extends State<QuestionPageWidget> {
   late MicCubit micCubit;
+  late SpeechBloc speechBloc;
+
+  late SpeechListner sl;
   @override
   void initState() {
     micCubit = context.read<MicCubit>();
+    speechBloc = context.read<SpeechBloc>();
+    sl = SpeechListner(speechBloc: speechBloc, micCubit: micCubit);
+
+    sl.speechInit();
     super.initState();
   }
 
@@ -251,7 +264,7 @@ class _QuestionPageWidgetState extends State<QuestionPageWidget> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => AnswerCubit(id: widget.index.toString()),
+      create: (context) => AnswerCubit(id: widget.questionId.toString()),
       child: ConstrainedBox(
         constraints: BoxConstraints(maxHeight: height(context) / 1.33),
         child: SingleChildScrollView(
@@ -329,9 +342,17 @@ class _QuestionPageWidgetState extends State<QuestionPageWidget> {
                         )),
                         TextButton(
                             onPressed: () {
-                              MicWidget().listen(context);
+                              SpeechBloc speechBloc =
+                                  context.read<SpeechBloc>();
+                              MicCubit micCubit = context.read<MicCubit>();
+                              SpeechListner(
+                                      speechBloc: speechBloc,
+                                      micCubit: micCubit)
+                                  .startListening();
                             },
-                            child: MicWidget()),
+                            child: MicWidget(
+                              sl: sl,
+                            )),
                       ],
                     );
                   } else {

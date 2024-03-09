@@ -34,14 +34,14 @@ class QuestionRepository {
           final res = await _dio.get(GetApi.listQuestionsUrl,
               options: Options(
                   headers: {
-                    'x-api-key': 'hlXOI5TUFzqrDEWUAc424S0LUrfqBWA6Uxehtped',
+                    'x-api-key': Api.apiKey,
                     'If-Modified-Since': formattedDate
                   },
                   validateStatus: (status) {
                     return status! < 400;
                   }),
               queryParameters: {
-                'userID': userId ?? 'fa7bad60-97fa-47e2-8791-f96107f62d49',
+                'userID': userId ?? '813d1149-73a9-4c6d-b0c5-1c7893da957d',
                 'excerciseID':
                     exerciseId ?? 'f655b6f1-f062-454f-856f-e8fdae372297',
               });
@@ -57,11 +57,9 @@ class QuestionRepository {
 
         final response = await Dio().get(
           GetApi.listQuestionsUrl,
-          options: Options(headers: {
-            'x-api-key': 'hlXOI5TUFzqrDEWUAc424S0LUrfqBWA6Uxehtped'
-          }),
+          options: Options(headers: {'x-api-key': Api.apiKey}),
           queryParameters: {
-            'userID': userId ?? 'fa7bad60-97fa-47e2-8791-f96107f62d49',
+            'userID': userId ?? '813d1149-73a9-4c6d-b0c5-1c7893da957d',
             'excerciseID': exerciseId ?? 'f655b6f1-f062-454f-856f-e8fdae372297',
           },
         );
@@ -81,7 +79,7 @@ class QuestionRepository {
       }
     } catch (e) {
       debugPrint("Error from repo: $e");
-      throw e;
+      rethrow;
     }
   }
 }

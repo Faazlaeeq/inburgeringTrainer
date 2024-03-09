@@ -226,29 +226,36 @@ class ImagesInRow extends StatelessWidget {
                     imageUrl: state.questions[index].questionData.imageURLs[0],
                     placeholder: (context, url) =>
                         const CupertinoActivityIndicator(),
-                    errorWidget: (context, url, error) =>
-                        const Icon(Icons.error),
+                    errorWidget: (context, url, error) => const Row(
+                      children: [Icon(Icons.error), Text(" Can't load Image")],
+                    ),
                     fit: BoxFit.cover,
                     key: UniqueKey(),
                   ),
                 ),
-                Container(
-                  height: 130,
-                  padding: paddingAll0,
-                  width: width(context) / 2.3,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: CachedNetworkImage(
-                    imageUrl: state.questions[index].questionData.imageURLs[1],
-                    placeholder: (context, url) =>
-                        const CupertinoActivityIndicator(),
-                    errorWidget: (context, url, error) =>
-                        const Icon(Icons.error),
-                    fit: BoxFit.cover,
-                    key: UniqueKey(),
-                  ),
-                )
+                if (state.questions[index].questionData.imageURLs.length > 1)
+                  Container(
+                    height: 130,
+                    padding: paddingAll0,
+                    width: width(context) / 2.3,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: CachedNetworkImage(
+                      imageUrl:
+                          state.questions[index].questionData.imageURLs[1],
+                      placeholder: (context, url) =>
+                          const CupertinoActivityIndicator(),
+                      errorWidget: (context, url, error) => const Row(
+                        children: [
+                          Icon(Icons.error),
+                          Text(" Can't load Image")
+                        ],
+                      ),
+                      fit: BoxFit.cover,
+                      key: UniqueKey(),
+                    ),
+                  )
               ],
               if (state is QuestionLoading || state is QuestionInitial) ...[
                 Container(

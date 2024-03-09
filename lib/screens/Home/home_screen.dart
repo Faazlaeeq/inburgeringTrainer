@@ -239,19 +239,19 @@ class _CardsGridwithHeadingState extends State<CardsGridwithHeading>
       (ExerciseModel exercise) => exercise.categoryName,
     ).values.toList();
 
-    int exerciseIndex = -1;
+    // int exerciseIndex = -1;
 
     return SliverList(
       delegate: SliverChildBuilderDelegate(
           childCount: exercisesByCategory.length, (ctx, index) {
-        exerciseIndex++;
+        // exerciseIndex++;
 
         return Column(
           children: [
             Padding(
               padding: const EdgeInsets.only(top: padding5),
               child: Text(
-                exercisesByCategory[index][exerciseIndex].categoryName,
+                exercisesByCategory[index][0].categoryName,
                 style: CupertinoTheme.of(context).textTheme.textStyle.copyWith(
                       fontWeight: FontWeight.bold,
                       fontSize: 15,

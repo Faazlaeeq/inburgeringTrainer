@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:inburgering_trainer/logic/audio_cubit.dart';
+import 'package:inburgering_trainer/logic/bloc/speech_bloc.dart';
 import 'package:inburgering_trainer/logic/cubit/answer_cubit.dart';
+import 'package:inburgering_trainer/logic/helpers/speech_listener.dart';
+import 'package:inburgering_trainer/logic/mic_cubit.dart';
 import 'package:inburgering_trainer/logic/question_cubit.dart';
 import 'package:inburgering_trainer/theme/colors.dart';
 import 'package:inburgering_trainer/utils/imports.dart';
@@ -9,6 +12,7 @@ import 'package:inburgering_trainer/widgets/error_widget.dart';
 import 'package:inburgering_trainer/widgets/homepage_widgets.dart';
 import 'package:inburgering_trainer/widgets/mic_widget.dart';
 import 'package:inburgering_trainer/widgets/modal_from_bottom.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
 class YourAnswerWidget extends StatelessWidget {
   const YourAnswerWidget({super.key, required this.index});
@@ -70,7 +74,7 @@ class YourAnswerWidget extends StatelessWidget {
               ),
               Container(
                 height: 35,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                     color: MyColors.accentColor,
                     borderRadius: BorderRadius.only(
                         bottomLeft: Radius.circular(10),
@@ -78,12 +82,16 @@ class YourAnswerWidget extends StatelessWidget {
                 child: TextButton(
                     onPressed: () {
                       context.read<AnswerCubit>().clearAnswer();
-                      MicWidget().listen(context);
+                      SpeechBloc speechBloc = context.read<SpeechBloc>();
+                      MicCubit micCubit = context.read<MicCubit>();
+                      SpeechListner(speechBloc: speechBloc, micCubit: micCubit)
+                          .startListening();
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.refresh, color: MyColors.darkPrimaryColor),
+                        const Icon(Icons.refresh,
+                            color: MyColors.darkPrimaryColor),
                         Text("Try Again",
                             style: CupertinoTheme.of(context)
                                 .textTheme

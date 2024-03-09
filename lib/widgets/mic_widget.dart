@@ -2,21 +2,30 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:avatar_glow/avatar_glow.dart';
+import 'package:inburgering_trainer/logic/bloc/speech_bloc.dart';
 
 import 'package:inburgering_trainer/logic/helpers/speech_listener.dart';
 import 'package:inburgering_trainer/logic/mic_cubit.dart';
 import 'package:inburgering_trainer/theme/colors.dart';
 import 'package:inburgering_trainer/utils/imports.dart';
 
-class MicWidget extends StatelessWidget {
-  MicWidget({super.key});
-  final streamController = StreamController<String>.broadcast();
+class MicWidget extends StatefulWidget {
+  SpeechListner sl;
+  MicWidget({super.key, required this.sl});
 
+  @override
+  State<MicWidget> createState() => _MicWidgetState();
+}
+
+class _MicWidgetState extends State<MicWidget> {
   void listen(BuildContext ctx) {
-    final sl = SpeechListner(ctx);
-    sl.speechInit();
+    widget.sl.startListening();
+  }
 
-    // print(reply);
+  @override
+  void initState() {
+    widget.sl.speechInit();
+    super.initState();
   }
 
   @override
