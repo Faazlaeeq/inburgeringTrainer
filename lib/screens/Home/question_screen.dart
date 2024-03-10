@@ -328,7 +328,7 @@ class _QuestionPageWidgetState extends State<QuestionPageWidget> {
               const SizedBox(
                 height: padding2,
               ),
-              const Spacer(),
+              // const Spacer(),
               BlocBuilder<AnswerCubit, AnswerState>(
                 builder: (context, state) {
                   if (state is AnswerInitial) {
