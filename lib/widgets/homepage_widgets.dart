@@ -24,13 +24,14 @@ class PlayQuestionButton extends StatefulWidget {
 }
 
 class _PlayQuestionButtonState extends State<PlayQuestionButton> {
-  AudioCubit audioCubit = AudioCubit();
+  late AudioCubit audioCubit;
 
   @override
   void initState() {
     debugPrint('PlayQuestionButton initState called');
     if (widget.isQuestion) {
       QuestionState state = context.read<QuestionCubit>().state;
+      audioCubit = context.read<AudioCubit>();
       AudioState audioState = audioCubit.state;
 
       if (state is QuestionLoaded &&
@@ -41,13 +42,24 @@ class _PlayQuestionButtonState extends State<PlayQuestionButton> {
               state.questions[widget.index].id);
         }
       } else if (state is QuestionLoaded && (audioState is AudioPlaying)) {
-        context.read<AudioCubit>().stopAudio();
-        context.read<AudioCubit>().playAudio(
-            state.questions[widget.index].questionData.questionSound,
-            state.questions[widget.index].id);
+        context.read<AudioCubit>().stopAudio().then((value) => context
+            .read<AudioCubit>()
+            .playAudio(state.questions[widget.index].questionData.questionSound,
+                state.questions[widget.index].id));
       }
+    } else {
+      audioCubit = AudioCubit();
     }
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    if (!widget.isQuestion) {
+      audioCubit.stopAudio();
+    }
+
+    super.dispose();
   }
 
   @override
@@ -75,11 +87,63 @@ class _PlayQuestionButtonState extends State<PlayQuestionButton> {
                       color: MyColors.blackColor,
                     );
                   } else if (audioState is AudioPlaying) {
-                    icon = Icon(Icons.pause_circle_outline_rounded,
-                        size: widget.iconSize, color: MyColors.blackColor);
+                    icon = StreamBuilder<Duration>(
+                        stream: audioCubit.audioPosition,
+                        builder: (context, snapshot) {
+                          return Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              SizedBox(
+                                width: widget.iconSize,
+                                height: widget.iconSize,
+                                child: CircularProgressIndicator(
+                                  value: (snapshot.data != null &&
+                                          audioState.duration != null)
+                                      ? snapshot.data!.inMilliseconds /
+                                          (audioState.duration!.inMilliseconds)
+                                      : 0.0,
+                                  strokeWidth: 2,
+                                  backgroundColor: Colors.grey[300],
+                                  valueColor:
+                                      const AlwaysStoppedAnimation<Color>(
+                                          MyColors.lightBlackColor),
+                                ),
+                              ),
+                              Icon(Icons.pause,
+                                  size: widget.iconSize * 0.6,
+                                  color: MyColors.blackLightColor),
+                            ],
+                          );
+                        });
                   } else if (audioState is AudioPaused) {
-                    icon = Icon(Icons.play_circle_outline_rounded,
-                        size: widget.iconSize, color: MyColors.blackColor);
+                    icon = StreamBuilder<Duration>(
+                        stream: audioCubit.audioPosition,
+                        builder: (context, snapshot) {
+                          return Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              SizedBox(
+                                width: widget.iconSize,
+                                height: widget.iconSize,
+                                child: CircularProgressIndicator(
+                                  value: (snapshot.data != null &&
+                                          audioState.duration != null)
+                                      ? snapshot.data!.inMilliseconds /
+                                          (audioState.duration!.inMilliseconds)
+                                      : 0.0,
+                                  strokeWidth: 2,
+                                  backgroundColor: Colors.grey[300],
+                                  valueColor:
+                                      const AlwaysStoppedAnimation<Color>(
+                                          MyColors.lightBlackColor),
+                                ),
+                              ),
+                              Icon(Icons.play_arrow,
+                                  size: widget.iconSize * 0.6,
+                                  color: MyColors.lightBlackColor),
+                            ],
+                          );
+                        });
                   } else {
                     icon = ImageIcon(
                       const AssetImage('assets/icons/speak.png'),
@@ -89,7 +153,7 @@ class _PlayQuestionButtonState extends State<PlayQuestionButton> {
                   }
                   return IconButton(
                     onPressed: () {
-                      print(
+                      debugPrint(
                           'AudioCubit state: ${context.read<AudioCubit>().state}');
 
                       QuestionState state = context.read<QuestionCubit>().state;
@@ -98,19 +162,19 @@ class _PlayQuestionButtonState extends State<PlayQuestionButton> {
                           (audioState is AudioStopped ||
                               audioState is AudioInitial)) {
                         if (widget.isQuestion) {
-                          context.read<AudioCubit>().playAudio(
+                          audioCubit.playAudio(
                               state.questions[widget.index].questionData
                                   .questionSound,
                               state.questions[widget.index].id);
                         } else {
-                          context.read<AudioCubit>().playAudio(
+                          audioCubit.playAudio(
                               state.questions[widget.index].questionData
                                   .answerSound,
                               state.questions[widget.index].id);
                         }
                       } else if (state is QuestionLoaded &&
                           audioState is AudioPaused) {
-                        context.read<AudioCubit>().resumeAudio();
+                        audioCubit.resumeAudio();
                       } else if (state is QuestionError) {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           content: Text(state.message),
@@ -118,7 +182,7 @@ class _PlayQuestionButtonState extends State<PlayQuestionButton> {
                         ));
                       } else if ((state is QuestionLoaded) &&
                           audioState is AudioPlaying) {
-                        context.read<AudioCubit>().pauseAudio();
+                        audioCubit.pauseAudio();
                       }
                     },
                     icon: icon,
@@ -159,8 +223,6 @@ class ShowTextWidget extends StatelessWidget {
                       ),
                       title: "Question Text",
                       data: [
-                        //TODO:make index dynamic
-
                         ModalContent(
                             title: "Actual Question",
                             content: state
