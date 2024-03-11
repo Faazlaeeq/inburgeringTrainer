@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:inburgering_trainer/config/api.dart';
+import 'package:inburgering_trainer/logic/helpers/auth_helper.dart';
 import 'package:inburgering_trainer/logic/helpers/hivehelper.dart';
 import 'package:inburgering_trainer/logic/helpers/internet_helper.dart';
 import 'package:inburgering_trainer/models/question_model.dart';
@@ -41,7 +42,7 @@ class QuestionRepository {
                     return status! < 400;
                   }),
               queryParameters: {
-                'userID': userId ?? '813d1149-73a9-4c6d-b0c5-1c7893da957d',
+                'userID': userId ?? AuthHelper.userId,
                 'excerciseID':
                     exerciseId ?? 'f655b6f1-f062-454f-856f-e8fdae372297',
               });
@@ -59,7 +60,7 @@ class QuestionRepository {
           GetApi.listQuestionsUrl,
           options: Options(headers: {'x-api-key': Api.apiKey}),
           queryParameters: {
-            'userID': userId ?? '813d1149-73a9-4c6d-b0c5-1c7893da957d',
+            'userID': userId ?? AuthHelper.userId,
             'excerciseID': exerciseId ?? 'f655b6f1-f062-454f-856f-e8fdae372297',
           },
         );

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:inburgering_trainer/config/api.dart';
+import 'package:inburgering_trainer/logic/helpers/auth_helper.dart';
 import 'package:inburgering_trainer/models/exercise_model.dart';
 
 class ExerciseRepository {
@@ -13,34 +14,40 @@ class ExerciseRepository {
     final response = await _dio.get(GetApi.listUserExcerciseUrl,
         options: Options(headers: {'x-api-key': Api.apiKey}),
         queryParameters: {
-          'userID': '813d1149-73a9-4c6d-b0c5-1c7893da957d',
+          'userID': AuthHelper.userId,
           'level': 'A2',
           'type': 'speaking'
         });
     debugPrint("Full Response:$response");
 
-    final List<dynamic> exercises = response.data['exercises'];
+    if (response.statusCode == 200) {
+      final List<dynamic> exercises = response.data['exercises'];
 
-    List<ExerciseModel> allSpeakingTests = [];
+      List<ExerciseModel> allSpeakingTests = [];
 
-    for (var exercise in exercises) {
-      final List<dynamic> speakingTests = exercise['speakingTests'];
-      final String categoryName = exercise['category'];
-      for (var test in speakingTests) {
-        String jsonString = jsonEncode(test);
-        debugPrint(jsonString);
-        allSpeakingTests.add(ExerciseModel.fromJson(jsonString, categoryName));
+      for (var exercise in exercises) {
+        final List<dynamic> speakingTests = exercise['speakingTests'];
+        final String categoryName = exercise['category'];
+        for (var test in speakingTests) {
+          String jsonString = jsonEncode(test);
+          debugPrint(jsonString);
+          allSpeakingTests
+              .add(ExerciseModel.fromJson(jsonString, categoryName));
+        }
       }
+      return allSpeakingTests;
+    } else if (response.statusCode == 402) {
+      throw Exception(response.data['message'] as String);
+    } else {
+      throw Exception('Failed to load exercises');
     }
-
-    return allSpeakingTests;
   }
 
   Future<int> getTotalQuestions() async {
     final response = await _dio.get(GetApi.listUserExcerciseUrl,
         options: Options(headers: {'x-api-key': Api.apiKey}),
         queryParameters: {
-          'userID': '813d1149-73a9-4c6d-b0c5-1c7893da957d',
+          'userID': AuthHelper.userId,
           'level': 'A2',
           'type': 'speaking'
         });

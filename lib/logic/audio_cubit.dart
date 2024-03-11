@@ -50,12 +50,12 @@ class AudioCubit extends Cubit<AudioState> {
 
   void playAudio(String base64String, String exerciseId) async {
     emit(AudioLoading());
+    await Future.delayed(const Duration(seconds: 2));
     try {
       final file = await base64ToAudio(base64String, exerciseId);
       debugPrint("Playing audio");
 
       await audioPlayer.play(DeviceFileSource(file.path));
-
       emit(AudioPlaying());
 
       audioPlayer.onPlayerComplete.listen((event) {

@@ -22,6 +22,10 @@ class _MicWidgetState extends State<MicWidget> {
     widget.sl.startListening();
   }
 
+  void stopListening(BuildContext ctx) {
+    widget.sl.stopListening();
+  }
+
   @override
   void initState() {
     widget.sl.speechInit();
@@ -44,13 +48,14 @@ class _MicWidgetState extends State<MicWidget> {
               child: Container(
                 height: 100,
                 width: 100,
+                alignment: Alignment.center,
                 padding: const EdgeInsets.all(30),
                 decoration: BoxDecoration(
                     color: MyColors.primaryColor,
                     borderRadius: BorderRadius.circular(50)),
-                child: const ImageIcon(
-                  AssetImage("assets/icons/micicon.png"),
-                  size: 50,
+                child: const Icon(
+                  Icons.square_rounded,
+                  size: 30,
                   color: MyColors.whiteColor,
                 ),
               ));

@@ -345,10 +345,18 @@ class _QuestionPageWidgetState extends State<QuestionPageWidget> {
                               SpeechBloc speechBloc =
                                   context.read<SpeechBloc>();
                               MicCubit micCubit = context.read<MicCubit>();
-                              SpeechListner(
-                                      speechBloc: speechBloc,
-                                      micCubit: micCubit)
-                                  .startListening();
+                              if (micCubit.state is MicInitial ||
+                                  micCubit.state is MicInactive) {
+                                SpeechListner(
+                                        speechBloc: speechBloc,
+                                        micCubit: micCubit)
+                                    .startListening();
+                              } else {
+                                SpeechListner(
+                                        speechBloc: speechBloc,
+                                        micCubit: micCubit)
+                                    .stopListening();
+                              }
                             },
                             child: MicWidget(
                               sl: sl,

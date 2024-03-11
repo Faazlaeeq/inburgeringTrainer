@@ -24,12 +24,14 @@ class PlayQuestionButton extends StatefulWidget {
 }
 
 class _PlayQuestionButtonState extends State<PlayQuestionButton> {
+  AudioCubit audioCubit = AudioCubit();
+
   @override
   void initState() {
     debugPrint('PlayQuestionButton initState called');
     if (widget.isQuestion) {
       QuestionState state = context.read<QuestionCubit>().state;
-      AudioState audioState = context.read<AudioCubit>().state;
+      AudioState audioState = audioCubit.state;
 
       if (state is QuestionLoaded &&
           (audioState is AudioInitial || audioState is AudioStopped)) {
@@ -56,71 +58,72 @@ class _PlayQuestionButtonState extends State<PlayQuestionButton> {
         BlocBuilder<QuestionCubit, QuestionState>(
           builder: (context, state) {
             return BlocBuilder<AudioCubit, AudioState>(
+                bloc: audioCubit,
                 builder: (context, audioState) {
-              Widget icon;
-
-              QuestionState state = context.read<QuestionCubit>().state;
-
-              if (state is QuestionLoading ||
-                  state is QuestionInitial ||
-                  state is QuestionError) {
-                return const SizedBox();
-              } else if (audioState is AudioStopped) {
-                icon = ImageIcon(
-                  const AssetImage('assets/icons/speak.png'),
-                  size: widget.iconSize,
-                  color: MyColors.blackColor,
-                );
-              } else if (audioState is AudioPlaying) {
-                icon = Icon(Icons.pause_circle_outline_rounded,
-                    size: widget.iconSize, color: MyColors.blackColor);
-              } else if (audioState is AudioPaused) {
-                icon = Icon(Icons.play_circle_outline_rounded,
-                    size: widget.iconSize, color: MyColors.blackColor);
-              } else {
-                icon = ImageIcon(
-                  const AssetImage('assets/icons/speak.png'),
-                  size: widget.iconSize,
-                  color: MyColors.blackColor,
-                );
-              }
-              return IconButton(
-                onPressed: () {
-                  print(
-                      'AudioCubit state: ${context.read<AudioCubit>().state}');
+                  Widget icon;
 
                   QuestionState state = context.read<QuestionCubit>().state;
 
-                  if ((state is QuestionLoaded) &&
-                      (audioState is AudioStopped ||
-                          audioState is AudioInitial)) {
-                    if (widget.isQuestion) {
-                      context.read<AudioCubit>().playAudio(
-                          state.questions[widget.index].questionData
-                              .questionSound,
-                          state.questions[widget.index].id);
-                    } else {
-                      context.read<AudioCubit>().playAudio(
-                          state
-                              .questions[widget.index].questionData.answerSound,
-                          state.questions[widget.index].id);
-                    }
-                  } else if (state is QuestionLoaded &&
-                      audioState is AudioPaused) {
-                    context.read<AudioCubit>().resumeAudio();
-                  } else if (state is QuestionError) {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text(state.message),
-                      backgroundColor: MyColors.primaryColor,
-                    ));
-                  } else if ((state is QuestionLoaded) &&
-                      audioState is AudioPlaying) {
-                    context.read<AudioCubit>().pauseAudio();
+                  if (state is QuestionLoading ||
+                      state is QuestionInitial ||
+                      state is QuestionError) {
+                    return const SizedBox();
+                  } else if (audioState is AudioStopped) {
+                    icon = ImageIcon(
+                      const AssetImage('assets/icons/speak.png'),
+                      size: widget.iconSize,
+                      color: MyColors.blackColor,
+                    );
+                  } else if (audioState is AudioPlaying) {
+                    icon = Icon(Icons.pause_circle_outline_rounded,
+                        size: widget.iconSize, color: MyColors.blackColor);
+                  } else if (audioState is AudioPaused) {
+                    icon = Icon(Icons.play_circle_outline_rounded,
+                        size: widget.iconSize, color: MyColors.blackColor);
+                  } else {
+                    icon = ImageIcon(
+                      const AssetImage('assets/icons/speak.png'),
+                      size: widget.iconSize,
+                      color: MyColors.blackColor,
+                    );
                   }
-                },
-                icon: icon,
-              );
-            });
+                  return IconButton(
+                    onPressed: () {
+                      print(
+                          'AudioCubit state: ${context.read<AudioCubit>().state}');
+
+                      QuestionState state = context.read<QuestionCubit>().state;
+
+                      if ((state is QuestionLoaded) &&
+                          (audioState is AudioStopped ||
+                              audioState is AudioInitial)) {
+                        if (widget.isQuestion) {
+                          context.read<AudioCubit>().playAudio(
+                              state.questions[widget.index].questionData
+                                  .questionSound,
+                              state.questions[widget.index].id);
+                        } else {
+                          context.read<AudioCubit>().playAudio(
+                              state.questions[widget.index].questionData
+                                  .answerSound,
+                              state.questions[widget.index].id);
+                        }
+                      } else if (state is QuestionLoaded &&
+                          audioState is AudioPaused) {
+                        context.read<AudioCubit>().resumeAudio();
+                      } else if (state is QuestionError) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text(state.message),
+                          backgroundColor: MyColors.primaryColor,
+                        ));
+                      } else if ((state is QuestionLoaded) &&
+                          audioState is AudioPlaying) {
+                        context.read<AudioCubit>().pauseAudio();
+                      }
+                    },
+                    icon: icon,
+                  );
+                });
           },
         )
       ],
