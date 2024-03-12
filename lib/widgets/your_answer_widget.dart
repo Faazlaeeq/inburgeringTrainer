@@ -153,7 +153,7 @@ class AnswerOptionsWidget extends StatelessWidget {
       child: Row(
         children: [
           SizedBox(
-            width: width(buildContext) * 0.42,
+            width: width(buildContext) * 0.45,
             height: 36,
             child: CupertinoButton(
               padding: paddingSymmetricHorizontal2,
@@ -200,7 +200,7 @@ class AnswerOptionsWidget extends StatelessWidget {
           ),
           const Spacer(),
           SizedBox(
-            width: width(buildContext) * 0.42,
+            width: width(buildContext) * 0.45,
             height: 36,
             child: CupertinoButton.filled(
               padding: paddingSymmetricHorizontal2,
