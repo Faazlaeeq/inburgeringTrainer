@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
-import 'package:inburgering_trainer/logic/bloc/speech_bloc.dart';
 import 'package:inburgering_trainer/logic/helpers/record_helper.dart';
 import 'package:inburgering_trainer/models/answer_record.dart';
 import 'package:inburgering_trainer/repository/answer_repository.dart';
@@ -8,6 +7,7 @@ import 'package:inburgering_trainer/utils/imports.dart';
 
 class AnswerCubit extends HydratedCubit<AnswerState> {
   late AnswerRepository answerRepository;
+  @override
   String id;
   AnswerCubit({this.id = "init"}) : super(AnswerInitial()) {
     answerRepository = AnswerRepository();

@@ -3,111 +3,139 @@ import 'package:inburgering_trainer/logic/audio_cubit.dart';
 import 'package:inburgering_trainer/logic/bloc/speech_bloc.dart';
 import 'package:inburgering_trainer/logic/cubit/answer_cubit.dart';
 import 'package:inburgering_trainer/logic/helpers/speech_listener.dart';
+import 'package:inburgering_trainer/logic/helpers/tts_helper.dart';
 import 'package:inburgering_trainer/logic/mic_cubit.dart';
 import 'package:inburgering_trainer/logic/question_cubit.dart';
 import 'package:inburgering_trainer/theme/colors.dart';
 import 'package:inburgering_trainer/utils/imports.dart';
 import 'package:inburgering_trainer/utils/sizes.dart';
-import 'package:inburgering_trainer/widgets/error_widget.dart';
 import 'package:inburgering_trainer/widgets/homepage_widgets.dart';
-import 'package:inburgering_trainer/widgets/mic_widget.dart';
 import 'package:inburgering_trainer/widgets/modal_from_bottom.dart';
-import 'package:speech_to_text/speech_to_text.dart';
 
-class YourAnswerWidget extends StatelessWidget {
+class YourAnswerWidget extends StatefulWidget {
   const YourAnswerWidget({super.key, required this.index});
   final int index;
+
+  @override
+  State<YourAnswerWidget> createState() => _YourAnswerWidgetState();
+}
+
+class _YourAnswerWidgetState extends State<YourAnswerWidget> {
+  @override
+  void initState() {
+    TtsHelper().init();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Your Answer",
-          style: CupertinoTheme.of(context).textTheme.textStyle,
-        ),
-        Container(
-          margin: paddingAll1,
-          decoration: BoxDecoration(
-            color: MyColors.whiteColor,
-            boxShadow: [
-              BoxShadow(
-                color: MyColors.shadowColor,
-                spreadRadius: 0,
-                blurRadius: 10,
-                offset: Offset(0, 3), // changes position of shadow
-              ),
-            ],
-            borderRadius: BorderRadius.circular(10),
+    return SingleChildScrollView(
+      child: ListView(
+        shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
+        children: [
+          Text(
+            "Your Answer",
+            style: CupertinoTheme.of(context).textTheme.textStyle,
           ),
-          child: Column(
-            children: [
-              Padding(
-                padding: paddingAll2,
-                child: BlocBuilder<AnswerCubit, AnswerState>(
-                    builder: (context, state) {
-                  if (state is AnswerLoading) {
-                    return const Center(
-                      child: CupertinoActivityIndicator(),
-                    );
-                  } else if (state is AnswerLoaded) {
-                    return Text(
-                      "${state.userAnswer}",
-                      style: CupertinoTheme.of(context)
-                          .textTheme
-                          .textStyle
-                          .copyWith(color: MyColors.blackColor, fontSize: 14),
-                    );
-                  } else if (state is AnswerError) {
-                    return Text(
-                      state.error,
-                      style: CupertinoTheme.of(context)
-                          .textTheme
-                          .textStyle
-                          .copyWith(color: MyColors.blackColor, fontSize: 14),
-                    );
-                  } else {
-                    return const SizedBox();
-                  }
-                }),
-              ),
-              Container(
-                height: 35,
-                decoration: const BoxDecoration(
-                    color: MyColors.accentColor,
-                    borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(10),
-                        bottomRight: Radius.circular(10))),
-                child: TextButton(
-                    onPressed: () {
-                      context.read<AnswerCubit>().clearAnswer();
-                      SpeechBloc speechBloc = context.read<SpeechBloc>();
-                      MicCubit micCubit = context.read<MicCubit>();
-                      SpeechListner(speechBloc: speechBloc, micCubit: micCubit)
-                          .startListening();
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.refresh,
-                            color: MyColors.darkPrimaryColor),
-                        Text("Try Again",
+          Container(
+            margin: paddingAll1,
+            decoration: BoxDecoration(
+              color: MyColors.whiteColor,
+              boxShadow: [
+                BoxShadow(
+                  color: MyColors.shadowColor,
+                  spreadRadius: 0,
+                  blurRadius: 10,
+                  offset: const Offset(0, 3), // changes position of shadow
+                ),
+              ],
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Column(
+              children: [
+                Padding(
+                  padding: paddingAll2,
+                  child: BlocBuilder<AnswerCubit, AnswerState>(
+                      builder: (context, state) {
+                    if (state is AnswerLoading) {
+                      return const Center(
+                        child: CupertinoActivityIndicator(),
+                      );
+                    } else if (state is AnswerLoaded) {
+                      return Column(
+                        children: [
+                          if (state.userAnswer != null)
+                            IconButton(
+                                onPressed: () {
+                                  TtsHelper().speak(state.userAnswer!);
+                                },
+                                icon: Icon(
+                                  Icons.play_arrow,
+                                  color: MyColors.darkPrimaryColor,
+                                  size: 30,
+                                )),
+                          Text(
+                            "${state.userAnswer}",
                             style: CupertinoTheme.of(context)
                                 .textTheme
                                 .textStyle
                                 .copyWith(
-                                    color: MyColors.darkPrimaryColor,
-                                    fontWeight: FontWeight.bold))
-                      ],
-                    )),
-              ),
-            ],
+                                    color: MyColors.blackColor, fontSize: 14),
+                          ),
+                        ],
+                      );
+                    } else if (state is AnswerError) {
+                      return Text(
+                        state.error,
+                        style: CupertinoTheme.of(context)
+                            .textTheme
+                            .textStyle
+                            .copyWith(color: MyColors.blackColor, fontSize: 14),
+                      );
+                    } else {
+                      return const SizedBox();
+                    }
+                  }),
+                ),
+                Container(
+                  height: 35,
+                  decoration: const BoxDecoration(
+                      color: MyColors.accentColor,
+                      borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(10),
+                          bottomRight: Radius.circular(10))),
+                  child: TextButton(
+                      onPressed: () {
+                        context.read<AnswerCubit>().clearAnswer();
+                        SpeechBloc speechBloc = context.read<SpeechBloc>();
+                        MicCubit micCubit = context.read<MicCubit>();
+                        SpeechListner(
+                                speechBloc: speechBloc, micCubit: micCubit)
+                            .startListening();
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.refresh,
+                              color: MyColors.darkPrimaryColor),
+                          Text("Try Again",
+                              style: CupertinoTheme.of(context)
+                                  .textTheme
+                                  .textStyle
+                                  .copyWith(
+                                      color: MyColors.darkPrimaryColor,
+                                      fontWeight: FontWeight.bold))
+                        ],
+                      )),
+                ),
+              ],
+            ),
           ),
-        ),
-        const SizedBox(height: 10),
-        AnswerOptionsWidget(index: index),
-      ],
+          const SizedBox(height: 10),
+          AnswerOptionsWidget(index: widget.index),
+        ],
+      ),
     );
   }
 }
@@ -115,11 +143,12 @@ class YourAnswerWidget extends StatelessWidget {
 class AnswerOptionsWidget extends StatelessWidget {
   AnswerOptionsWidget({super.key, required this.index});
   final int index;
-  AudioCubit audioCubit = AudioCubit();
+  final AudioCubit audioCubit = AudioCubit();
   @override
+  // ignore: avoid_renaming_method_parameters
   Widget build(BuildContext buildContext) {
     return Container(
-      decoration: BoxDecoration(color: MyColors.whiteColor),
+      decoration: const BoxDecoration(color: MyColors.whiteColor),
       padding: paddingSymmetricHorizontal1,
       child: Row(
         children: [
@@ -130,7 +159,7 @@ class AnswerOptionsWidget extends StatelessWidget {
               padding: paddingSymmetricHorizontal2,
               color: MyColors.primaryColor,
               minSize: 10,
-              child: Text("Correct Answer"),
+              child: const Text("Correct Answer"),
               onPressed: () {
                 showCupertinoModalPopup(
                     context: buildContext,

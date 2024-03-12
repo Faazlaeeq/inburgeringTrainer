@@ -1,5 +1,3 @@
-import 'package:inburgering_trainer/logic/helpers/hivehelper.dart';
-import 'package:inburgering_trainer/logic/helpers/internet_helper.dart';
 import 'package:inburgering_trainer/logic/helpers/record_helper.dart';
 import 'package:inburgering_trainer/models/question_model.dart';
 import 'package:inburgering_trainer/repository/question_repository.dart';

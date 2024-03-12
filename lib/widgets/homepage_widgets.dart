@@ -35,7 +35,9 @@ class _PlayQuestionButtonState extends State<PlayQuestionButton> {
       AudioState audioState = audioCubit.state;
 
       if (state is QuestionLoaded &&
-          (audioState is AudioInitial || audioState is AudioStopped)) {
+          (audioState is AudioInitial ||
+              audioState is AudioStopped ||
+              audioState is AudioPaused)) {
         if (widget.isQuestion) {
           context.read<AudioCubit>().playAudio(
               state.questions[widget.index].questionData.questionSound,
@@ -264,7 +266,7 @@ class ImagesInRow extends StatelessWidget {
           padding: paddingSymmetricVertical3,
           width: width(context),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (state is QuestionLoaded) ...[
                 BlocListener<SpeechBloc, SpeechState>(
@@ -283,6 +285,7 @@ class ImagesInRow extends StatelessWidget {
                 Container(
                   height: 130,
                   padding: paddingAll0,
+                  margin: paddingSymmetricHorizontal1,
                   width: width(context) / 2.3,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
@@ -302,6 +305,7 @@ class ImagesInRow extends StatelessWidget {
                   Container(
                     height: 130,
                     padding: paddingAll0,
+                    margin: paddingSymmetricHorizontal1,
                     width: width(context) / 2.3,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),

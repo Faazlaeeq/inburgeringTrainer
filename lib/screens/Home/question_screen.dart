@@ -1,19 +1,14 @@
 import 'dart:io';
 
-import 'package:collection/collection.dart';
-import 'package:dio/io.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:inburgering_trainer/logic/audio_cubit.dart';
 import 'package:inburgering_trainer/logic/bloc/speech_bloc.dart';
 import 'package:inburgering_trainer/logic/cubit/activity_cubit.dart';
 import 'package:inburgering_trainer/logic/cubit/answer_cubit.dart';
-import 'package:inburgering_trainer/logic/helpers/record_helper.dart';
-import 'package:inburgering_trainer/logic/helpers/speech_listener.dart';
 import 'package:inburgering_trainer/logic/helpers/speech_listener.dart';
 import 'package:inburgering_trainer/logic/mic_cubit.dart';
 import 'package:inburgering_trainer/logic/question_cubit.dart';
-import 'package:inburgering_trainer/models/question_model.dart';
 import 'package:inburgering_trainer/theme/colors.dart';
 import 'package:inburgering_trainer/utils/sizes.dart';
 import 'package:inburgering_trainer/widgets/mywidgets.dart';
@@ -136,11 +131,13 @@ class _QuestionScreenState extends State<QuestionScreen> {
                         child: PageView.builder(
                             onPageChanged: (index) async {
                               currentPageNotifier.value = index + 1;
-                              if (context.read<AudioCubit>().state
-                                  is AudioPlaying) {
-                                context.read<AudioCubit>().stopAudio();
-                              }
+                              // if (context.read<AudioCubit>().state
+                              //     is AudioPlaying) {
+                              //   context.read<AudioCubit>().stopAudio();
+                              // }
                             },
+                            pageSnapping: true,
+                            dragStartBehavior: DragStartBehavior.down,
                             itemCount: state.questions.length,
                             controller: pageController,
                             itemBuilder: (context, index) {
@@ -155,10 +152,10 @@ class _QuestionScreenState extends State<QuestionScreen> {
                       const SizedBox(
                         height: padding2,
                       ),
-                      PageChangeButtons(
-                          state: state,
-                          currentIndex: currentIndex,
-                          pageController: pageController),
+                      // PageChangeButtons(
+                      //     state: state,
+                      //     currentIndex: currentIndex,
+                      //     pageController: pageController),
                     ],
                   ),
                 ),
@@ -266,111 +263,103 @@ class _QuestionPageWidgetState extends State<QuestionPageWidget> {
     return BlocProvider(
       create: (context) => AnswerCubit(id: widget.questionId.toString()),
       child: ConstrainedBox(
-        constraints: BoxConstraints(maxHeight: height(context) / 1.33),
-        child: SingleChildScrollView(
-          child: ListView(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            children: [
-              const SizedBox(
-                height: 10,
-              ),
-              Text(
-                "Please listen to the voice",
+        constraints: BoxConstraints(maxHeight: height(context) / 1.22),
+        child: Column(
+          children: [
+            const SizedBox(
+              height: 10,
+            ),
+            Text(
+              "Please listen to the voice",
+              style: CupertinoTheme.of(context).textTheme.textStyle.copyWith(
+                  color: MyColors.blackColor,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(
+              height: padding1,
+            ),
+            RichText(
+              text: TextSpan(
                 style: CupertinoTheme.of(context).textTheme.textStyle.copyWith(
-                    color: MyColors.blackColor,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(
-                height: padding1,
-              ),
-              RichText(
-                text: TextSpan(
-                  style:
-                      CupertinoTheme.of(context).textTheme.textStyle.copyWith(
-                            color: MyColors.blackColor,
-                            fontSize: 12,
-                          ),
-                  children: <TextSpan>[
-                    const TextSpan(
-                        text:
-                            'The voice is related to images below. Use the image cues for framing your answer. '),
-                    TextSpan(
-                      text: 'More details',
-                      style: CupertinoTheme.of(context)
-                          .textTheme
-                          .textStyle
-                          .copyWith(
-                            color: MyColors.primaryColor,
-                            fontWeight: FontWeight.bold,
-                          ), // Change color
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          debugPrint('More details tapped');
-                          // Navigate or do something else
-                        },
+                      color: MyColors.blackColor,
+                      fontSize: 12,
                     ),
-                  ],
-                ),
+                children: <TextSpan>[
+                  const TextSpan(
+                      text:
+                          'The voice is related to images below. Use the image cues for framing your answer. '),
+                  TextSpan(
+                    text: 'More details',
+                    style:
+                        CupertinoTheme.of(context).textTheme.textStyle.copyWith(
+                              color: MyColors.primaryColor,
+                              fontWeight: FontWeight.bold,
+                            ), // Change color
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        debugPrint('More details tapped');
+                        // Navigate or do something else
+                      },
+                  ),
+                ],
               ),
-              ImagesInRow(
-                index: widget.index,
-              ),
-              const SizedBox(
-                height: padding2,
-              ),
-              ShowTextWidget(index: widget.index),
-              const SizedBox(
-                height: padding2,
-              ),
-              PlayQuestionButton(index: widget.index),
-              const SizedBox(
-                height: padding2,
-              ),
-              // const Spacer(),
-              BlocBuilder<AnswerCubit, AnswerState>(
-                builder: (context, state) {
-                  if (state is AnswerInitial) {
-                    return Column(
-                      children: [
-                        const Center(
-                            child: Text(
-                          "Tap to Speak",
-                          style: TextStyle(
-                              color: MyColors.blackColor, fontSize: 14),
-                        )),
-                        TextButton(
-                            onPressed: () {
-                              SpeechBloc speechBloc =
-                                  context.read<SpeechBloc>();
-                              MicCubit micCubit = context.read<MicCubit>();
-                              if (micCubit.state is MicInitial ||
-                                  micCubit.state is MicInactive) {
-                                SpeechListner(
-                                        speechBloc: speechBloc,
-                                        micCubit: micCubit)
-                                    .startListening();
-                              } else {
-                                SpeechListner(
-                                        speechBloc: speechBloc,
-                                        micCubit: micCubit)
-                                    .stopListening();
-                              }
-                            },
-                            child: MicWidget(
-                              sl: sl,
-                            )),
-                      ],
-                    );
-                  } else {
-                    // context.read<ActivityCubit>().fetchActivity();
-                    return YourAnswerWidget(index: widget.index);
-                  }
-                },
-              ),
-            ],
-          ),
+            ),
+            ImagesInRow(
+              index: widget.index,
+            ),
+            const SizedBox(
+              height: padding1,
+            ),
+            ShowTextWidget(index: widget.index),
+            const SizedBox(
+              height: padding2,
+            ),
+            PlayQuestionButton(index: widget.index),
+            const SizedBox(
+              height: padding2,
+            ),
+            const Spacer(),
+            BlocBuilder<AnswerCubit, AnswerState>(
+              builder: (context, state) {
+                if (state is AnswerInitial) {
+                  return Column(
+                    children: [
+                      const Center(
+                          child: Text(
+                        "Tap to Speak",
+                        style:
+                            TextStyle(color: MyColors.blackColor, fontSize: 14),
+                      )),
+                      TextButton(
+                          onPressed: () {
+                            SpeechBloc speechBloc = context.read<SpeechBloc>();
+                            MicCubit micCubit = context.read<MicCubit>();
+                            if (micCubit.state is MicInitial ||
+                                micCubit.state is MicInactive) {
+                              SpeechListner(
+                                      speechBloc: speechBloc,
+                                      micCubit: micCubit)
+                                  .startListening();
+                            } else {
+                              SpeechListner(
+                                      speechBloc: speechBloc,
+                                      micCubit: micCubit)
+                                  .stopListening();
+                            }
+                          },
+                          child: MicWidget(
+                            sl: sl,
+                          )),
+                    ],
+                  );
+                } else {
+                  // context.read<ActivityCubit>().fetchActivity();
+                  return YourAnswerWidget(index: widget.index);
+                }
+              },
+            ),
+          ],
         ),
       ),
     );

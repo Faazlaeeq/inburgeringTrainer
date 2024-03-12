@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:inburgering_trainer/logic/helpers/hivehelper.dart';
 import 'package:inburgering_trainer/logic/helpers/internet_helper.dart';
-import 'package:inburgering_trainer/logic/question_cubit.dart';
 import 'package:inburgering_trainer/models/answer_record.dart';
 import 'package:inburgering_trainer/repository/exercise_repository.dart';
 import 'package:inburgering_trainer/utils/imports.dart';
