@@ -38,7 +38,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
   bool isRecordingCompleted = false;
   bool isLoading = true;
   late Directory appDirectory;
-
+  int _currentPage = 0;
   @override
   void initState() {
     _audioCubit = context.read<AudioCubit>();
@@ -48,14 +48,26 @@ class _QuestionScreenState extends State<QuestionScreen> {
     context.read<QuestionCubit>().getQuestions(exerciseId: widget.exerciseId);
     super.initState();
     currentIndex = pageController.initialPage + 1;
+
+    pageController.addListener(() {
+      debugPrint(pageController.page.toString());
+      if (pageController.page == pageController.page!.round()) {
+        setState(() {
+          _currentPage = pageController.page!.round();
+        });
+      }
+    });
   }
 
   @override
   void dispose() {
     _audioCubit.stopAudio();
+    _audioCubit.close();
     // _answerCubit.clearAnswer();
     _micCubit.micInitial();
     _activityCubit.fetchActivity();
+    pageController.dispose();
+
     super.dispose();
   }
 
@@ -141,12 +153,10 @@ class _QuestionScreenState extends State<QuestionScreen> {
                             itemCount: state.questions.length,
                             controller: pageController,
                             itemBuilder: (context, index) {
-                              return SingleChildScrollView(
-                                child: QuestionPageWidget(
+                              return QuestionPageWidget(
                                   index: index,
                                   questionId: state.questions[index].id,
-                                ),
-                              );
+                                  currentPage: _currentPage);
                             }),
                       ),
                       const SizedBox(
@@ -185,6 +195,7 @@ class PageChangeButtons extends StatelessWidget {
   final int? currentIndex;
   final PageController pageController;
   final QuestionLoaded state;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -229,9 +240,13 @@ class PageChangeButtons extends StatelessWidget {
 
 class QuestionPageWidget extends StatefulWidget {
   const QuestionPageWidget(
-      {super.key, required this.index, required this.questionId});
+      {super.key,
+      required this.index,
+      required this.questionId,
+      required this.currentPage});
   final int index;
   final String questionId;
+  final int currentPage;
 
   @override
   State<QuestionPageWidget> createState() => _QuestionPageWidgetState();
@@ -255,6 +270,7 @@ class _QuestionPageWidgetState extends State<QuestionPageWidget> {
   @override
   void dispose() {
     micCubit.micInitial();
+
     super.dispose();
   }
 
@@ -315,7 +331,13 @@ class _QuestionPageWidgetState extends State<QuestionPageWidget> {
             const SizedBox(
               height: padding2,
             ),
-            PlayQuestionButton(index: widget.index),
+            (widget.index == widget.currentPage)
+                ? PlayQuestionButton(index: widget.index)
+                : ImageIcon(
+                    const AssetImage('assets/icons/speak.png'),
+                    color: MyColors.blackLightColor,
+                    size: 72,
+                  ),
             const SizedBox(
               height: padding2,
             ),
@@ -335,8 +357,13 @@ class _QuestionPageWidgetState extends State<QuestionPageWidget> {
                           onPressed: () {
                             SpeechBloc speechBloc = context.read<SpeechBloc>();
                             MicCubit micCubit = context.read<MicCubit>();
+                            AudioState audioCubit =
+                                context.read<AudioCubit>().state;
                             if (micCubit.state is MicInitial ||
                                 micCubit.state is MicInactive) {
+                              if (audioCubit is AudioPlaying) {
+                                context.read<AudioCubit>().stopAudio();
+                              }
                               SpeechListner(
                                       speechBloc: speechBloc,
                                       micCubit: micCubit)

@@ -86,7 +86,7 @@ class _PlayQuestionButtonState extends State<PlayQuestionButton> {
                     icon = ImageIcon(
                       const AssetImage('assets/icons/speak.png'),
                       size: widget.iconSize,
-                      color: MyColors.blackColor,
+                      color: MyColors.blackLightColor,
                     );
                   } else if (audioState is AudioPlaying) {
                     icon = StreamBuilder<Duration>(

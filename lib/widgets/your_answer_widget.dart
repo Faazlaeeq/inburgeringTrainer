@@ -63,27 +63,33 @@ class _YourAnswerWidgetState extends State<YourAnswerWidget> {
                         child: CupertinoActivityIndicator(),
                       );
                     } else if (state is AnswerLoaded) {
-                      return Column(
-                        children: [
-                          if (state.userAnswer != null)
-                            IconButton(
-                                onPressed: () {
-                                  TtsHelper().speak(state.userAnswer!);
-                                },
-                                icon: Icon(
-                                  Icons.play_arrow,
-                                  color: MyColors.darkPrimaryColor,
-                                  size: 30,
-                                )),
-                          Text(
-                            "${state.userAnswer}",
-                            style: CupertinoTheme.of(context)
-                                .textTheme
-                                .textStyle
-                                .copyWith(
-                                    color: MyColors.blackColor, fontSize: 14),
-                          ),
-                        ],
+                      return ConstrainedBox(
+                        constraints:
+                            BoxConstraints(maxHeight: height(context) * 0.1),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            if (state.userAnswer != null)
+                              PlayUserAnswerButton(
+                                state: state,
+                              ),
+                            Expanded(
+                              child: SingleChildScrollView(
+                                child: Text(
+                                  // "lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+                                  state.userAnswer!,
+                                  style: CupertinoTheme.of(context)
+                                      .textTheme
+                                      .textStyle
+                                      .copyWith(
+                                          color: MyColors.blackColor,
+                                          fontSize: 12),
+                                  softWrap: true,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       );
                     } else if (state is AnswerError) {
                       return Text(
@@ -92,6 +98,7 @@ class _YourAnswerWidgetState extends State<YourAnswerWidget> {
                             .textTheme
                             .textStyle
                             .copyWith(color: MyColors.blackColor, fontSize: 14),
+                        softWrap: true,
                       );
                     } else {
                       return const SizedBox();
@@ -137,6 +144,62 @@ class _YourAnswerWidgetState extends State<YourAnswerWidget> {
         ],
       ),
     );
+  }
+}
+
+class PlayUserAnswerButton extends StatefulWidget {
+  const PlayUserAnswerButton({
+    super.key,
+    required this.state,
+  });
+  final AnswerLoaded state;
+
+  @override
+  State<PlayUserAnswerButton> createState() => _PlayUserAnswerButtonState();
+}
+
+class _PlayUserAnswerButtonState extends State<PlayUserAnswerButton> {
+  bool playing = false;
+  TtsHelper tts = TtsHelper();
+
+  @override
+  Widget build(BuildContext context) {
+    tts.flutterTts.setCompletionHandler(() {
+      setState(() {
+        playing = false;
+      });
+    });
+    return IconButton(
+        onPressed: () {
+          if (playing) {
+            tts.flutterTts.stop();
+
+            setState(() {
+              playing = false;
+            });
+          } else {
+            if (widget.state.userAnswer != null) {
+              tts.speak(widget.state.userAnswer!);
+              setState(() {
+                playing = true;
+              });
+            }
+          }
+        },
+        enableFeedback: false,
+        padding: paddingAll1,
+        icon: Container(
+          padding: paddingAll1,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(50),
+            color: MyColors.accentColor,
+          ),
+          child: Icon(
+            playing ? Icons.stop : Icons.play_arrow,
+            color: MyColors.darkPrimaryColor,
+            size: 30,
+          ),
+        ));
   }
 }
 

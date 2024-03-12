@@ -63,11 +63,16 @@ class _HomeScreenState extends State<HomeScreen> {
         child: SafeArea(
             child: Stack(
           children: [
-            CustomScrollView(
-              slivers: [
-                SliverPadding(
-                  padding: EdgeInsets.only(top: 100),
-                  sliver: BlocBuilder<ExerciseCubit, ExerciseState>(
+            Padding(
+              padding: const EdgeInsets.only(top: 100),
+              child: CustomScrollView(
+                slivers: [
+                  CupertinoSliverRefreshControl(
+                    onRefresh: () async {
+                      await exerciseCubit.fetchExercises();
+                    },
+                  ),
+                  BlocBuilder<ExerciseCubit, ExerciseState>(
                     bloc: exerciseCubit,
                     builder: ((context, state) {
                       if (state is ExerciseLoaded) {
@@ -80,8 +85,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       }
                     }),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
             Material(
               elevation: 5,
