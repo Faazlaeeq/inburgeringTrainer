@@ -16,6 +16,8 @@ import 'package:inburgering_trainer/theme/theme.dart';
 import 'package:inburgering_trainer/repository/exercise_repository.dart';
 import 'package:inburgering_trainer/screens/Home/home_screen.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter/services.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,7 +25,11 @@ void main() async {
       storageDirectory: await getApplicationDocumentsDirectory());
   await HiveHelper.initHive();
   await RecordHelper().initialize();
-  runApp(MainApp());
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+    .then((_) {
+      runApp(MainApp());
+    });
+  
 }
 
 class MainApp extends StatelessWidget {
