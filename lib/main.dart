@@ -19,17 +19,20 @@ import 'package:path_provider/path_provider.dart';
 import 'package:flutter/services.dart';
 
 
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   HydratedBloc.storage = await HydratedStorage.build(
       storageDirectory: await getApplicationDocumentsDirectory());
   await HiveHelper.initHive();
   await RecordHelper().initialize();
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
     .then((_) {
       runApp(MainApp());
     });
   
+
+  runApp(MainApp());
 }
 
 class MainApp extends StatelessWidget {
