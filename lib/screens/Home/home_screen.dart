@@ -156,9 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               size: 20,
                               color: MyColors.primaryColor,
                             ),
-                            const CupertinoActivityIndicator.partiallyRevealed(
-                              radius: 10,
-                            ),
+                            const CupertinoActivityIndicator(),
                           ],
                         ),
                         Padding(
@@ -295,8 +293,9 @@ class _CardsGridwithHeadingState extends State<CardsGridwithHeading>
                     exerciseName:
                         exercisesByCategory[index][index2].exerciseName,
                     isSelected: (questionDone != null && questionDone > 0),
-                    questionCompleted:
-                        "${exercisesByCategory[index][index2].questionsCount.toString()}");
+                    questionCompleted: exercisesByCategory[index][index2]
+                        .questionsCount
+                        .toString());
               },
               itemCount: exercisesByCategory[index].length,
             ),

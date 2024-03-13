@@ -314,8 +314,28 @@ class _QuestionPageWidgetState extends State<QuestionPageWidget> {
                             ), // Change color
                     recognizer: TapGestureRecognizer()
                       ..onTap = () {
-                        debugPrint('More details tapped');
-                        // Navigate or do something else
+                        showCupertinoModalPopup(
+                            context: context,
+                            builder: (context) {
+                              return ModalFromBottom(
+                                  title: "More Details",
+                                  data: [
+                                    ModalContent(
+                                        content:
+                                            '''Please listen to the question and record an
+answer. 
+
+After recording you will be able to listen to 
+it and compare it with a correct example 
+we suggest. We recommend attempting
+your responses before checking the correct
+answer
+
+Additionally, you can receive AI feedback
+on your answer. Note that sometimes it
+may return non factual answers''')
+                                  ]);
+                            });
                       },
                   ),
                 ],
@@ -333,10 +353,9 @@ class _QuestionPageWidgetState extends State<QuestionPageWidget> {
             ),
             (widget.index == widget.currentPage)
                 ? PlayQuestionButton(index: widget.index)
-                : ImageIcon(
-                    const AssetImage('assets/icons/speak.png'),
-                    color: MyColors.blackLightColor,
-                    size: 72,
+                : const Padding(
+                    padding: EdgeInsets.all(padding3),
+                    child: CupertinoActivityIndicator(),
                   ),
             const SizedBox(
               height: padding2,

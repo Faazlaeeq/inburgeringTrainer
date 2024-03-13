@@ -50,6 +50,12 @@ class _PlayQuestionButtonState extends State<PlayQuestionButton> {
                 state.questions[widget.index].id));
       }
     } else {
+      QuestionState state = context.read<QuestionCubit>().state;
+      audioCubit = context.read<AudioCubit>();
+      AudioState audioState = audioCubit.state;
+      if (state is QuestionLoaded && (audioState is AudioPlaying)) {
+        context.read<AudioCubit>().stopAudio();
+      }
       audioCubit = AudioCubit();
     }
     super.initState();

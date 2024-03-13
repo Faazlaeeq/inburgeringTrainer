@@ -11,6 +11,8 @@ import 'package:inburgering_trainer/utils/imports.dart';
 import 'package:inburgering_trainer/utils/sizes.dart';
 import 'package:inburgering_trainer/widgets/homepage_widgets.dart';
 import 'package:inburgering_trainer/widgets/modal_from_bottom.dart';
+import 'package:inburgering_trainer/widgets/music_visualizer.dart';
+import 'package:lottie/lottie.dart';
 
 class YourAnswerWidget extends StatefulWidget {
   const YourAnswerWidget({super.key, required this.index});
@@ -66,13 +68,16 @@ class _YourAnswerWidgetState extends State<YourAnswerWidget> {
                       return ConstrainedBox(
                         constraints:
                             BoxConstraints(maxHeight: height(context) * 0.1),
-                        child: Row(
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             if (state.userAnswer != null)
                               PlayUserAnswerButton(
                                 state: state,
                               ),
+                            const SizedBox(
+                              height: 5,
+                            ),
                             Expanded(
                               child: SingleChildScrollView(
                                 child: Text(
@@ -162,44 +167,87 @@ class _PlayUserAnswerButtonState extends State<PlayUserAnswerButton> {
   bool playing = false;
   TtsHelper tts = TtsHelper();
 
+  final List<Color> colors = [
+    MyColors.darkPrimaryColor,
+    MyColors.primaryColor,
+    MyColors.accentColor,
+    MyColors.primaryColor,
+    MyColors.darkPrimaryColor
+  ];
+
+  final List<int> duration = [900, 700, 600, 800, 500];
+
+  late MusicVisualizer visualizer;
+  final visualComponentKey = GlobalKey<MusicVisualizerState>();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    visualizer = MusicVisualizer();
     tts.flutterTts.setCompletionHandler(() {
       setState(() {
         playing = false;
+        visualComponentKey.currentState?.stopAnimation();
       });
     });
-    return IconButton(
-        onPressed: () {
-          if (playing) {
-            tts.flutterTts.stop();
 
-            setState(() {
-              playing = false;
-            });
-          } else {
-            if (widget.state.userAnswer != null) {
-              tts.speak(widget.state.userAnswer!);
-              setState(() {
-                playing = true;
-              });
-            }
-          }
-        },
-        enableFeedback: false,
-        padding: paddingAll1,
-        icon: Container(
-          padding: paddingAll1,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(50),
-            color: MyColors.accentColor,
-          ),
-          child: Icon(
-            playing ? Icons.stop : Icons.play_arrow,
-            color: MyColors.darkPrimaryColor,
-            size: 30,
-          ),
-        ));
+    return Container(
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: MyColors.lightGrey,
+          border: Border.all(color: MyColors.outlineColor2)),
+      child: Row(
+        children: [
+          IconButton(
+              onPressed: () {
+                if (playing) {
+                  tts.flutterTts.stop();
+
+                  setState(() {
+                    playing = false;
+                    visualComponentKey.currentState?.stopAnimation();
+                  });
+                } else {
+                  if (widget.state.userAnswer != null) {
+                    tts.speak(widget.state.userAnswer!);
+                    setState(() {
+                      playing = true;
+                      visualComponentKey.currentState?.startAnimation();
+                    });
+                  }
+                }
+              },
+              enableFeedback: false,
+              padding: paddingAll1,
+              icon: Container(
+                padding: paddingAll1,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(50),
+                  color: MyColors.primaryColor,
+                ),
+                child: Icon(
+                  playing ? Icons.stop_rounded : Icons.play_arrow_rounded,
+                  color: MyColors.bgColor,
+                  size: 20,
+                ),
+              )),
+          SizedBox(
+              width: width(context) * 0.7,
+              height: 20,
+              child: playing
+                  ? Lottie.asset("assets/icons/waveAnimation.json",
+                      fit: BoxFit.cover)
+                  : Image.asset(
+                      "assets/icons/disabledWave.png",
+                      fit: BoxFit.cover,
+                    ))
+        ],
+      ),
+    );
   }
 }
 

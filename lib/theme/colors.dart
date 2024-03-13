@@ -10,6 +10,8 @@ class MyColors {
   static const Color lighBlueColor = Color.fromRGBO(120, 153, 228, 1);
   static const Color accentBlueColor = Color(0xFFDAE9FB);
   static const Color outlineBlueColor = Color(0xFF1B56C3);
+  static const Color lightGrey = Color(0xFFF9F9F9);
+  static const Color outlineColor2 = Color(0xFFEBEBEB);
   static const Color greyColor = Color.fromRGBO(119, 119, 119, 1);
   static const Color blackColor = CupertinoColors.black;
   static const Color bgColor = CupertinoColors.white;

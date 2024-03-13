@@ -22,5 +22,9 @@ class TtsHelper {
 
   Future<void> speak(String text) async {
     await flutterTts.speak(text);
+    flutterTts.progressHandler =
+        (String text, int start, int end, String word) {
+      print('Progress: $start $end $word ${text.length}');
+    };
   }
 }
