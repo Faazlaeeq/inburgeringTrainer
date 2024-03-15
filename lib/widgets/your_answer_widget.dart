@@ -15,8 +15,9 @@ import 'package:inburgering_trainer/widgets/music_visualizer.dart';
 import 'package:lottie/lottie.dart';
 
 class YourAnswerWidget extends StatefulWidget {
-  const YourAnswerWidget({super.key, required this.index});
+  const YourAnswerWidget({super.key, required this.index, required this.sl});
   final int index;
+  final SpeechListner sl;
 
   @override
   State<YourAnswerWidget> createState() => _YourAnswerWidgetState();
@@ -120,11 +121,9 @@ class _YourAnswerWidgetState extends State<YourAnswerWidget> {
                   child: TextButton(
                       onPressed: () {
                         context.read<AnswerCubit>().clearAnswer();
-                        SpeechBloc speechBloc = context.read<SpeechBloc>();
-                        MicCubit micCubit = context.read<MicCubit>();
-                        SpeechListner(
-                                speechBloc: speechBloc, micCubit: micCubit)
-                            .startListening();
+                        // SpeechBloc speechBloc = context.read<SpeechBloc>();
+                        // MicCubit micCubit = context.read<MicCubit>();
+                        widget.sl.startListening();
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,

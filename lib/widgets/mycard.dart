@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:inburgering_trainer/logic/cubit/activity_cubit.dart';
 import 'package:inburgering_trainer/logic/cubit/answer_cubit.dart';
 import 'package:inburgering_trainer/logic/helpers/record_helper.dart';
@@ -101,18 +102,26 @@ class CardwithClick extends StatelessWidget {
               ),
             ),
             Positioned(
-                bottom: 0,
-                right: 0,
-                child: Text(
-                  "${questionDone ?? 0}/ ${widget.questionCompleted}",
-                  style: CupertinoTheme.of(context)
-                      .textTheme
-                      .textStyle
-                      .copyWith(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                          color: MyColors.primaryColor),
-                )),
+              bottom: 0,
+              right: 0,
+              child: (((questionDone ?? 0) /
+                          double.parse(widget.questionCompleted)) !=
+                      1)
+                  ? Text(
+                      "${questionDone ?? 0}/ ${widget.questionCompleted}",
+                      style: CupertinoTheme.of(context)
+                          .textTheme
+                          .textStyle
+                          .copyWith(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                              color: MyColors.primaryColor),
+                    )
+                  : const Icon(
+                      Icons.check,
+                      color: MyColors.primaryColor,
+                    ),
+            ),
           ],
         ),
       ),

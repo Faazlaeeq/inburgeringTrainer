@@ -40,6 +40,9 @@ dependencies:
   flutter_tts: ^3.8.5
   music_visualizer: ^1.0.4
   lottie: ^3.1.0
+  chat_bubbles: ^1.6.0
+  file_picker: ^6.2.0
+  google_sign_in: ^6.2.1
 
 dev_dependencies:
   flutter_test:

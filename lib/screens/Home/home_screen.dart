@@ -95,7 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Container(
                 padding: paddingAll2,
                 margin: paddingAll2,
-                height: 70,
+                height: 71,
                 decoration: BoxDecoration(
                   color: MyColors.cardColor,
                   borderRadius: BorderRadius.circular(10),
@@ -156,13 +156,14 @@ class _HomeScreenState extends State<HomeScreen> {
                               size: 20,
                               color: MyColors.primaryColor,
                             ),
-                            const CupertinoActivityIndicator(),
+                            Text("${state.lastActivity}"),
                           ],
                         ),
                         Padding(
                           padding: paddingSymmetricVertical2,
                           child: LinearProgressIndicator(
                             minHeight: 10,
+                            value: state.lastActivityProgress,
                             backgroundColor: MyColors.bgColor,
                             valueColor: const AlwaysStoppedAnimation(
                                 MyColors.primaryColor),

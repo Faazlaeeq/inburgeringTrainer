@@ -12,13 +12,12 @@ import 'package:inburgering_trainer/logic/helpers/record_helper.dart';
 import 'package:inburgering_trainer/logic/mic_cubit.dart';
 import 'package:inburgering_trainer/logic/question_cubit.dart';
 import 'package:inburgering_trainer/repository/question_repository.dart';
+import 'package:inburgering_trainer/screens/Home/recorder_screen.dart';
 import 'package:inburgering_trainer/theme/theme.dart';
 import 'package:inburgering_trainer/repository/exercise_repository.dart';
 import 'package:inburgering_trainer/screens/Home/home_screen.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/services.dart';
-
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,13 +25,10 @@ void main() async {
       storageDirectory: await getApplicationDocumentsDirectory());
   await HiveHelper.initHive();
   await RecordHelper().initialize();
-    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
-    .then((_) {
-      runApp(MainApp());
-    });
-  
-
-  runApp(MainApp());
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+      .then((_) {
+    runApp(MainApp());
+  });
 }
 
 class MainApp extends StatelessWidget {
@@ -53,6 +49,9 @@ class MainApp extends StatelessWidget {
           create: (context) => AnswerCubit(),
         )
       ],
+      // child: const MaterialApp(
+      //   home: Home(),
+      // )
       child: MaterialApp(
         home: CupertinoApp(
             theme: MyTheme.lightTheme(context), home: const HomeScreen()),

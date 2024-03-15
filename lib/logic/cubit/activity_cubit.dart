@@ -6,19 +6,23 @@ class ActivityCubit extends Cubit<ActivityState> {
   final RecordHelper recordHelper = RecordHelper();
   ActivityCubit() : super(ActivityInitial());
 
+  double lastActivityProgress = 0;
+  String lastActivity = "";
+
   Future<void> fetchActivity() async {
     try {
-      debugPrint("faaz1: fetch activity called!");
-      emit(ActivityLoading());
-      debugPrint("faaz1: fetch activity loading called!");
+      emit(ActivityLoading(
+          lastActivityProgress: lastActivityProgress,
+          lastActivity: lastActivity));
 
       await recordHelper.initialize();
       ActivityModel activity = ActivityModel(
           totalQuestions: await recordHelper.getTotalQuestion(),
           totalAnswered: recordHelper.getTotalAnswerCount());
-      debugPrint("faaz1: fetch activity loaded called!");
 
       emit(ActivityLoaded(activity));
+      lastActivityProgress = activity.totalAnswered / activity.totalQuestions;
+      lastActivity = "${activity.totalAnswered}/${activity.totalQuestions}";
     } catch (e) {
       emit(ActivityError(e.toString()));
       debugPrint(e.toString());
@@ -30,7 +34,11 @@ abstract class ActivityState {}
 
 class ActivityInitial extends ActivityState {}
 
-class ActivityLoading extends ActivityState {}
+class ActivityLoading extends ActivityState {
+  final double lastActivityProgress;
+  final String lastActivity;
+  ActivityLoading({this.lastActivityProgress = 0, this.lastActivity = ""});
+}
 
 class ActivityLoaded extends ActivityState {
   final ActivityModel activities;

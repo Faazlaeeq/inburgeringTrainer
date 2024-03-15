@@ -62,7 +62,6 @@ class _QuestionScreenState extends State<QuestionScreen> {
   @override
   void dispose() {
     _audioCubit.stopAudio();
-    _audioCubit.close();
     // _answerCubit.clearAnswer();
     _micCubit.micInitial();
     _activityCubit.fetchActivity();
@@ -261,7 +260,10 @@ class _QuestionPageWidgetState extends State<QuestionPageWidget> {
   void initState() {
     micCubit = context.read<MicCubit>();
     speechBloc = context.read<SpeechBloc>();
-    sl = SpeechListner(speechBloc: speechBloc, micCubit: micCubit);
+    sl = SpeechListner(
+        speechBloc: speechBloc,
+        micCubit: micCubit,
+        questionId: widget.questionId);
 
     sl.speechInit();
     super.initState();
@@ -353,9 +355,18 @@ may return non factual answers''')
             ),
             (widget.index == widget.currentPage)
                 ? PlayQuestionButton(index: widget.index)
-                : const Padding(
-                    padding: EdgeInsets.all(padding3),
-                    child: CupertinoActivityIndicator(),
+                : const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        onPressed: null,
+                        icon: ImageIcon(
+                          AssetImage('assets/icons/speak.png'),
+                          size: 72,
+                          color: MyColors.lightBlackColor,
+                        ),
+                      )
+                    ],
                   ),
             const SizedBox(
               height: padding2,
@@ -374,24 +385,20 @@ may return non factual answers''')
                       )),
                       TextButton(
                           onPressed: () {
-                            SpeechBloc speechBloc = context.read<SpeechBloc>();
+                            // SpeechBloc speechBloc = context.read<SpeechBloc>();
                             MicCubit micCubit = context.read<MicCubit>();
                             AudioState audioCubit =
                                 context.read<AudioCubit>().state;
+
                             if (micCubit.state is MicInitial ||
                                 micCubit.state is MicInactive) {
                               if (audioCubit is AudioPlaying) {
                                 context.read<AudioCubit>().stopAudio();
                               }
-                              SpeechListner(
-                                      speechBloc: speechBloc,
-                                      micCubit: micCubit)
-                                  .startListening();
+
+                              sl.startListening();
                             } else {
-                              SpeechListner(
-                                      speechBloc: speechBloc,
-                                      micCubit: micCubit)
-                                  .stopListening();
+                              sl.stopListening();
                             }
                           },
                           child: MicWidget(
@@ -401,7 +408,10 @@ may return non factual answers''')
                   );
                 } else {
                   // context.read<ActivityCubit>().fetchActivity();
-                  return YourAnswerWidget(index: widget.index);
+                  return YourAnswerWidget(
+                    index: widget.index,
+                    sl: sl,
+                  );
                 }
               },
             ),

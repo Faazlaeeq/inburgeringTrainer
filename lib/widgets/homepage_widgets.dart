@@ -152,12 +152,14 @@ class _PlayQuestionButtonState extends State<PlayQuestionButton> {
                             ],
                           );
                         });
-                  } else {
+                  } else if (state is AudioStopped) {
                     icon = ImageIcon(
                       const AssetImage('assets/icons/speak.png'),
                       size: widget.iconSize,
-                      color: MyColors.blackColor,
+                      color: MyColors.blackLightColor,
                     );
+                  } else {
+                    icon = const SizedBox();
                   }
                   return IconButton(
                     onPressed: () {

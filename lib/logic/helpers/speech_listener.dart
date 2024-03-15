@@ -1,11 +1,14 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:inburgering_trainer/logic/bloc/speech_bloc.dart';
 import 'package:inburgering_trainer/logic/helpers/internet_helper.dart';
 import 'package:inburgering_trainer/logic/mic_cubit.dart';
 import 'package:inburgering_trainer/theme/colors.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
@@ -14,8 +17,36 @@ class SpeechListner {
 
   SpeechBloc speechBloc;
   MicCubit micCubit;
-  SpeechListner({required this.speechBloc, required this.micCubit}) {
+
+  //Recording
+  late final RecorderController recorderController;
+
+  String? path;
+  String? musicFile;
+  bool isRecording = false;
+  bool isRecordingCompleted = false;
+  bool isLoading = true;
+  late Directory appDirectory;
+  String questionId;
+  SpeechListner(
+      {required this.speechBloc,
+      required this.micCubit,
+      required this.questionId}) {
     speechInit();
+    _initialiseControllers();
+    _getDir();
+  }
+  void _initialiseControllers() {
+    recorderController = RecorderController()
+      ..androidEncoder = AndroidEncoder.aac
+      ..androidOutputFormat = AndroidOutputFormat.mpeg4
+      ..iosEncoder = IosEncoder.kAudioFormatMPEG4AAC
+      ..sampleRate = 44100;
+  }
+
+  void _getDir() async {
+    appDirectory = await getApplicationDocumentsDirectory();
+    path = "${appDirectory.path}/recording$questionId.m4a";
   }
 
   SpeechToText speech = SpeechToText();
@@ -40,7 +71,7 @@ class SpeechListner {
         cancelOnError: true);
     final bool netStatus = await InternetHelper.checkInternetConnectivity();
     if (netStatus) {
-      await speech
+      speech
           .listen(
         listenOptions: options,
         onResult: onResultHandler,
@@ -51,6 +82,7 @@ class SpeechListner {
         debugPrint(e);
         micCubit.micError();
       });
+      // startRecording();
     } else {
       Fluttertoast.showToast(
           msg:
@@ -68,6 +100,7 @@ class SpeechListner {
   Future<void> stopListening() async {
     debugPrint("faaz:stopListening Called");
     await speech.stop();
+    await stopRecording();
   }
 
   void speechInit() async {
@@ -87,9 +120,35 @@ class SpeechListner {
     }
   }
 
+  Future<void> startRecording() async {
+    try {
+      await recorderController.record(path: path);
+    } on Exception catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
+  Future<void> stopRecording() async {
+    try {
+      recorderController.reset();
+
+      path = await recorderController.stop(false);
+
+      if (path != null) {
+        isRecordingCompleted = true;
+        debugPrint(path);
+        debugPrint("Recorded file size: ${File(path!).lengthSync()}");
+      }
+    } on Exception catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
   // Closing the stream when the listen function completes or isSpeechAvailable is false
   Future<void> close() async {
     streamController.stream.listen((_) {}).cancel();
+
     streamController.close();
+    recorderController.dispose();
   }
 }
