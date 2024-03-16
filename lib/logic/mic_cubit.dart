@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 
@@ -10,12 +13,17 @@ class MicCubit extends Cubit<MicState> {
     emit(MicActive());
   }
 
-  void micInactive() {
-    emit(MicInactive());
+  void micInactive(String path) {
+    emit(MicInactive(path: path));
+    try {
+      List<int> audioBytes = File(path).readAsBytesSync();
+
+      String base64Audio = base64Encode(audioBytes);
+    } catch (e) {}
   }
 
-  void micError() {
-    emit(MicError());
+  void micError(String error) {
+    emit(MicError(error: error));
   }
 
   void micInitial() {

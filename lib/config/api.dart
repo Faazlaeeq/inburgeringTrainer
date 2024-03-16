@@ -17,6 +17,7 @@ class PostApi extends Api {
   static const String sendAnswerUrl = Api.baseUrl2 + sendAnswer;
   static const String deleteUser = "/googleLogin";
   static const String deleteUserUrl = Api.baseUrl2 + deleteUser;
+  static const String sendTranscript = "/transcript";
 }
 
 class GetApi extends Api {

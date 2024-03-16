@@ -28,4 +28,10 @@ class AnswerRepository {
       throw Exception('Failed to post answer');
     }
   }
+
+  Future<String> getTranscript(String base64Audio) {
+    final response = _dio.post(PostApi.sendTranscript,
+        options: Options(headers: {'x-api-key': Api.apiKey}), data: {});
+    return Future.value("transcript");
+  }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:avatar_glow/avatar_glow.dart';
+import 'package:inburgering_trainer/logic/helpers/sound_helper.dart';
 
 import 'package:inburgering_trainer/logic/helpers/speech_listener.dart';
 import 'package:inburgering_trainer/logic/mic_cubit.dart';
@@ -7,7 +8,7 @@ import 'package:inburgering_trainer/theme/colors.dart';
 import 'package:inburgering_trainer/utils/imports.dart';
 
 class MicWidget extends StatefulWidget {
-  final SpeechListner sl;
+  final SoundHelper sl;
   const MicWidget({super.key, required this.sl});
 
   @override
@@ -16,16 +17,15 @@ class MicWidget extends StatefulWidget {
 
 class _MicWidgetState extends State<MicWidget> {
   void listen(BuildContext ctx) {
-    widget.sl.startListening();
+    widget.sl.record();
   }
 
   void stopListening(BuildContext ctx) {
-    widget.sl.stopListening();
+    widget.sl.stopRecorder();
   }
 
   @override
   void initState() {
-    widget.sl.speechInit();
     super.initState();
   }
 

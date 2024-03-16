@@ -12,7 +12,6 @@ import 'package:inburgering_trainer/logic/helpers/record_helper.dart';
 import 'package:inburgering_trainer/logic/mic_cubit.dart';
 import 'package:inburgering_trainer/logic/question_cubit.dart';
 import 'package:inburgering_trainer/repository/question_repository.dart';
-import 'package:inburgering_trainer/screens/Home/recorder_screen.dart';
 import 'package:inburgering_trainer/theme/theme.dart';
 import 'package:inburgering_trainer/repository/exercise_repository.dart';
 import 'package:inburgering_trainer/screens/Home/home_screen.dart';

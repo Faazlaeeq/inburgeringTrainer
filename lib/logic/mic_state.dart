@@ -7,6 +7,12 @@ class MicInitial extends MicState {}
 
 class MicActive extends MicState {}
 
-class MicInactive extends MicState {}
+class MicInactive extends MicState {
+  final String path;
+  MicInactive({required this.path});
+}
 
-class MicError extends MicState {}
+class MicError extends MicState {
+  final String error;
+  MicError({required this.error});
+}

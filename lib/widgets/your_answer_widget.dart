@@ -1,11 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:inburgering_trainer/logic/audio_cubit.dart';
 import 'package:inburgering_trainer/logic/bloc/speech_bloc.dart';
 import 'package:inburgering_trainer/logic/cubit/answer_cubit.dart';
+import 'package:inburgering_trainer/logic/helpers/sound_helper.dart';
 import 'package:inburgering_trainer/logic/helpers/speech_listener.dart';
 import 'package:inburgering_trainer/logic/helpers/tts_helper.dart';
 import 'package:inburgering_trainer/logic/mic_cubit.dart';
 import 'package:inburgering_trainer/logic/question_cubit.dart';
+import 'package:inburgering_trainer/screens/Home/chat_bubble.dart';
 import 'package:inburgering_trainer/theme/colors.dart';
 import 'package:inburgering_trainer/utils/imports.dart';
 import 'package:inburgering_trainer/utils/sizes.dart';
@@ -13,29 +17,41 @@ import 'package:inburgering_trainer/widgets/homepage_widgets.dart';
 import 'package:inburgering_trainer/widgets/modal_from_bottom.dart';
 import 'package:inburgering_trainer/widgets/music_visualizer.dart';
 import 'package:lottie/lottie.dart';
+import 'package:path_provider/path_provider.dart';
 
 class YourAnswerWidget extends StatefulWidget {
   const YourAnswerWidget({super.key, required this.index, required this.sl});
   final int index;
-  final SpeechListner sl;
+  final SoundHelper sl;
 
   @override
   State<YourAnswerWidget> createState() => _YourAnswerWidgetState();
 }
 
 class _YourAnswerWidgetState extends State<YourAnswerWidget> {
+  late Directory appDirectory;
   @override
   void initState() {
     TtsHelper().init();
+    getDir();
     super.initState();
+  }
+
+  void getDir() async {
+    appDirectory = await getApplicationDocumentsDirectory();
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
+    String audioFilepathWorking =
+        "/data/user/0/com.example.inburgering_trainer/app_flutter/recording1429929f-c4c5-40be-97b2-591ba8de92e6.m4a";
+    String audioFilepath =
+        "/storage/emulated/0/Android/data/com.example.inburgering_trainer/files/audio_1710615164148";
     return SingleChildScrollView(
       child: ListView(
         shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
+        physics: const NeverScrollableScrollPhysics(),
         children: [
           Text(
             "Your Answer",
@@ -57,59 +73,62 @@ class _YourAnswerWidgetState extends State<YourAnswerWidget> {
             ),
             child: Column(
               children: [
-                Padding(
-                  padding: paddingAll2,
-                  child: BlocBuilder<AnswerCubit, AnswerState>(
-                      builder: (context, state) {
-                    if (state is AnswerLoading) {
-                      return const Center(
-                        child: CupertinoActivityIndicator(),
-                      );
-                    } else if (state is AnswerLoaded) {
-                      return ConstrainedBox(
-                        constraints:
-                            BoxConstraints(maxHeight: height(context) * 0.1),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            if (state.userAnswer != null)
-                              PlayUserAnswerButton(
-                                state: state,
-                              ),
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            Expanded(
-                              child: SingleChildScrollView(
-                                child: Text(
-                                  // "lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-                                  state.userAnswer!,
-                                  style: CupertinoTheme.of(context)
-                                      .textTheme
-                                      .textStyle
-                                      .copyWith(
-                                          color: MyColors.blackColor,
-                                          fontSize: 12),
-                                  softWrap: true,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    } else if (state is AnswerError) {
-                      return Text(
-                        state.error,
-                        style: CupertinoTheme.of(context)
-                            .textTheme
-                            .textStyle
-                            .copyWith(color: MyColors.blackColor, fontSize: 14),
-                        softWrap: true,
-                      );
-                    } else {
-                      return const SizedBox();
-                    }
-                  }),
+                // Padding(
+                //   padding: paddingAll2,
+                //   child: BlocBuilder<AnswerCubit, AnswerState>(
+                //       builder: (context, state) {
+                //     if (state is AnswerLoading) {
+                //       return const Center(
+                //         child: CupertinoActivityIndicator(),
+                //       );
+                //     } else if (state is AnswerLoaded) {
+                //       return ConstrainedBox(
+                //         constraints:
+                //             BoxConstraints(maxHeight: height(context) * 0.1),
+                //         child: Column(
+                //           crossAxisAlignment: CrossAxisAlignment.center,
+                //           children: [
+                //             if (state.userAnswer != null)
+                //               const SizedBox(
+                //                 height: 5,
+                //               ),
+                //             Expanded(
+                //               child: SingleChildScrollView(
+                //                 child: Text(
+                //                   // "lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+                //                   state.userAnswer!,
+                //                   style: CupertinoTheme.of(context)
+                //                       .textTheme
+                //                       .textStyle
+                //                       .copyWith(
+                //                           color: MyColors.blackColor,
+                //                           fontSize: 12),
+                //                   softWrap: true,
+                //                 ),
+                //               ),
+                //             ),
+                //           ],
+                //         ),
+                //       );
+                //     } else if (state is AnswerError) {
+                //       return Text(
+                //         state.error,
+                //         style: CupertinoTheme.of(context)
+                //             .textTheme
+                //             .textStyle
+                //             .copyWith(color: MyColors.blackColor, fontSize: 14),
+                //         softWrap: true,
+                //       );
+                //     } else {
+                //       return const SizedBox();
+                //     }
+                //   }),
+                // ),
+                ///data/user/0/com.example.inburgering_trainer/app_flutter/recording1529929f-c4c5-40be-97b2-591ba8de92e1.m4a
+                WaveBubble(
+                  path: audioFilepath,
+                  isSender: true,
+                  appDirectory: appDirectory,
                 ),
                 Container(
                   height: 35,
@@ -123,7 +142,7 @@ class _YourAnswerWidgetState extends State<YourAnswerWidget> {
                         context.read<AnswerCubit>().clearAnswer();
                         // SpeechBloc speechBloc = context.read<SpeechBloc>();
                         // MicCubit micCubit = context.read<MicCubit>();
-                        widget.sl.startListening();
+                        widget.sl.record();
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,

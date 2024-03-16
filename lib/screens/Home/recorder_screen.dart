@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:audio_waveforms/audio_waveforms.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:inburgering_trainer/screens/Home/chat_bubble.dart';
 import 'package:path_provider/path_provider.dart';
@@ -112,7 +111,7 @@ class _HomeState extends State<Home> {
     }
   }
 
-  void _refreshWave() {
-    if (isRecording) recorderController.refresh();
-  }
+  // void _refreshWave() {
+  //   if (isRecording) recorderController.refresh();
+  // }
 }

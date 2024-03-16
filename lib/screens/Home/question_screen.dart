@@ -6,7 +6,7 @@ import 'package:inburgering_trainer/logic/audio_cubit.dart';
 import 'package:inburgering_trainer/logic/bloc/speech_bloc.dart';
 import 'package:inburgering_trainer/logic/cubit/activity_cubit.dart';
 import 'package:inburgering_trainer/logic/cubit/answer_cubit.dart';
-import 'package:inburgering_trainer/logic/helpers/speech_listener.dart';
+import 'package:inburgering_trainer/logic/helpers/sound_helper.dart';
 import 'package:inburgering_trainer/logic/mic_cubit.dart';
 import 'package:inburgering_trainer/logic/question_cubit.dart';
 import 'package:inburgering_trainer/theme/colors.dart';
@@ -255,17 +255,13 @@ class _QuestionPageWidgetState extends State<QuestionPageWidget> {
   late MicCubit micCubit;
   late SpeechBloc speechBloc;
 
-  late SpeechListner sl;
+  late SoundHelper sh;
   @override
   void initState() {
     micCubit = context.read<MicCubit>();
     speechBloc = context.read<SpeechBloc>();
-    sl = SpeechListner(
-        speechBloc: speechBloc,
-        micCubit: micCubit,
-        questionId: widget.questionId);
+    sh = SoundHelper(questionId: widget.questionId, micCubit: micCubit);
 
-    sl.speechInit();
     super.initState();
   }
 
@@ -343,9 +339,9 @@ may return non factual answers''')
                 ],
               ),
             ),
-            ImagesInRow(
-              index: widget.index,
-            ),
+            // ImagesInRow(
+            //   index: widget.index,
+            // ),
             const SizedBox(
               height: padding1,
             ),
@@ -353,25 +349,25 @@ may return non factual answers''')
             const SizedBox(
               height: padding2,
             ),
-            (widget.index == widget.currentPage)
-                ? PlayQuestionButton(index: widget.index)
-                : const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        onPressed: null,
-                        icon: ImageIcon(
-                          AssetImage('assets/icons/speak.png'),
-                          size: 72,
-                          color: MyColors.lightBlackColor,
-                        ),
-                      )
-                    ],
-                  ),
-            const SizedBox(
-              height: padding2,
-            ),
-            const Spacer(),
+            // (widget.index == widget.currentPage)
+            //     ? PlayQuestionButton(index: widget.index)
+            //     : const Row(
+            //         mainAxisAlignment: MainAxisAlignment.center,
+            //         children: [
+            //           IconButton(
+            //             onPressed: null,
+            //             icon: ImageIcon(
+            //               AssetImage('assets/icons/speak.png'),
+            //               size: 72,
+            //               color: MyColors.lightBlackColor,
+            //             ),
+            //           )
+            //         ],
+            //       ),
+            // const SizedBox(
+            //   height: padding2,
+            // ),
+            // const Spacer(),
             BlocBuilder<AnswerCubit, AnswerState>(
               builder: (context, state) {
                 if (state is AnswerInitial) {
@@ -396,13 +392,13 @@ may return non factual answers''')
                                 context.read<AudioCubit>().stopAudio();
                               }
 
-                              sl.startListening();
+                              sh.record();
                             } else {
-                              sl.stopListening();
+                              sh.stopRecorder();
                             }
                           },
                           child: MicWidget(
-                            sl: sl,
+                            sl: sh,
                           )),
                     ],
                   );
@@ -410,10 +406,14 @@ may return non factual answers''')
                   // context.read<ActivityCubit>().fetchActivity();
                   return YourAnswerWidget(
                     index: widget.index,
-                    sl: sl,
+                    sl: sh,
                   );
                 }
               },
+            ),
+            YourAnswerWidget(
+              index: widget.index,
+              sl: sh,
             ),
           ],
         ),

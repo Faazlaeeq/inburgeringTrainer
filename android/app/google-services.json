@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "117649696358",
+    "project_id": "language-bc37a",
+    "storage_bucket": "language-bc37a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:117649696358:android:3fca4b42ca5260a83d2fa7",
+        "android_client_info": {
+          "package_name": "com.example.inburgering_trainer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "117649696358-k5v9m4pmd06d18giujvia8o50nhlqdbl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYtTWv6Pmb_lYbrIY9KXMd6t5-ejp6WAM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "117649696358-k5v9m4pmd06d18giujvia8o50nhlqdbl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

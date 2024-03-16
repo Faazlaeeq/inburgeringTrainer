@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>117649696358-9ip26lm5gqrcpl1cp3gqdl5trq8pu08k.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.117649696358-9ip26lm5gqrcpl1cp3gqdl5trq8pu08k</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDdOI6ZBTUNhdyN_uH4zgGRel-Q8a2GMqQ</string>
+	<key>GCM_SENDER_ID</key>
+	<string>117649696358</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.inburgeringTrainer</string>
+	<key>PROJECT_ID</key>
+	<string>language-bc37a</string>
+	<key>STORAGE_BUCKET</key>
+	<string>language-bc37a.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:117649696358:ios:3a593d8887c391703d2fa7</string>
+</dict>
+</plist>

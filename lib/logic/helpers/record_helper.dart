@@ -42,7 +42,7 @@ class RecordHelper {
   }
 
   void addAnswerRecord(AnswerRecord answerRecord) {
-    debugPrint("AnswerRecord added to Hive: ${answerRecord.questionId}");
+    // debugPrint("AnswerRecord added to Hive: ${answerRecord.questionId}");
     for (var element in answerRecords) {
       debugPrint("AnswerRecord: ${element.questionId}");
     }
@@ -67,7 +67,7 @@ class RecordHelper {
   }
 
   bool getAnswerGiven(String questionId) {
-    debugPrint("faaz: record is empty ${answerRecords == []} $answerRecords");
+    // debugPrint("faaz: record is empty ${answerRecords == []} $answerRecords");
     if (answerRecords.isNotEmpty) {
       return answerRecords
           .firstWhere(
@@ -90,7 +90,7 @@ class RecordHelper {
   }
 
   int? getTotalAnswerCountByExercise(String exerciseId) {
-    debugPrint("faaz: exerciseId: $exerciseId");
+    // debugPrint("faaz: exerciseId: $exerciseId");
     return answerRecords
         .where((element) =>
             element.exerciseId == exerciseId && element.answerGiven == true)

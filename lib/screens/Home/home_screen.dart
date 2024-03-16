@@ -1,9 +1,9 @@
 import 'dart:core';
 
 import 'package:flutter/material.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:inburgering_trainer/logic/cubit/activity_cubit.dart';
 import 'package:inburgering_trainer/logic/helpers/record_helper.dart';
-import 'package:inburgering_trainer/logic/helpers/tts_helper.dart';
 import 'package:inburgering_trainer/models/exercise_model.dart';
 import 'package:inburgering_trainer/repository/exercise_repository.dart';
 import 'package:inburgering_trainer/screens/setting/setting_screen.dart';
@@ -48,6 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             onPressed: () => setState(() {
               RecordHelper().clearRecord();
+              HydratedBloc.storage.clear();
             }),
           ),
           trailing: IconButton(
@@ -156,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               size: 20,
                               color: MyColors.primaryColor,
                             ),
-                            Text("${state.lastActivity}"),
+                            Text(state.lastActivity),
                           ],
                         ),
                         Padding(
