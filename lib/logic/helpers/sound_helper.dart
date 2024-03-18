@@ -79,7 +79,7 @@ class SoundHelper {
         micCubit.micActive();
 
         final config = RecordConfig(
-          encoder: AudioEncoder.pcm16bits,
+          encoder: AudioEncoder.wav,
           numChannels: 1,
           sampleRate: 44100,
         );
@@ -109,7 +109,7 @@ class SoundHelper {
     final dir = await getExternalStorageDirectory();
     return p.join(
       dir!.path,
-      'audio_${DateTime.now().millisecondsSinceEpoch}',
+      'audio_${DateTime.now().millisecondsSinceEpoch}.m4a',
     );
   }
 
