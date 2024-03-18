@@ -78,8 +78,8 @@ class SoundHelper {
         }
         micCubit.micActive();
 
-        const config = RecordConfig(
-          encoder: AudioEncoder.amrNb,
+        final config = RecordConfig(
+          encoder: AudioEncoder.pcm16bits,
           numChannels: 1,
           sampleRate: 44100,
         );

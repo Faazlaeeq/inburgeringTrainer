@@ -29,7 +29,7 @@ class YourAnswerWidget extends StatefulWidget {
 }
 
 class _YourAnswerWidgetState extends State<YourAnswerWidget> {
-  late Directory appDirectory;
+  Directory? appDirectory;
   @override
   void initState() {
     TtsHelper().init();
@@ -38,7 +38,7 @@ class _YourAnswerWidgetState extends State<YourAnswerWidget> {
   }
 
   void getDir() async {
-    appDirectory = await getApplicationDocumentsDirectory();
+    appDirectory = await getExternalStorageDirectory();
     setState(() {});
   }
 
@@ -47,7 +47,7 @@ class _YourAnswerWidgetState extends State<YourAnswerWidget> {
     String audioFilepathWorking =
         "/data/user/0/com.example.inburgering_trainer/app_flutter/recording1429929f-c4c5-40be-97b2-591ba8de92e6.m4a";
     String audioFilepath =
-        "/storage/emulated/0/Android/data/com.example.inburgering_trainer/files/audio_1710615164148";
+        "/storage/emulated/0/Android/data/com.example.inburgering_trainer/files/audio_1710748291198";
     return SingleChildScrollView(
       child: ListView(
         shrinkWrap: true,
@@ -73,63 +73,65 @@ class _YourAnswerWidgetState extends State<YourAnswerWidget> {
             ),
             child: Column(
               children: [
-                // Padding(
-                //   padding: paddingAll2,
-                //   child: BlocBuilder<AnswerCubit, AnswerState>(
-                //       builder: (context, state) {
-                //     if (state is AnswerLoading) {
-                //       return const Center(
-                //         child: CupertinoActivityIndicator(),
-                //       );
-                //     } else if (state is AnswerLoaded) {
-                //       return ConstrainedBox(
-                //         constraints:
-                //             BoxConstraints(maxHeight: height(context) * 0.1),
-                //         child: Column(
-                //           crossAxisAlignment: CrossAxisAlignment.center,
-                //           children: [
-                //             if (state.userAnswer != null)
-                //               const SizedBox(
-                //                 height: 5,
-                //               ),
-                //             Expanded(
-                //               child: SingleChildScrollView(
-                //                 child: Text(
-                //                   // "lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-                //                   state.userAnswer!,
-                //                   style: CupertinoTheme.of(context)
-                //                       .textTheme
-                //                       .textStyle
-                //                       .copyWith(
-                //                           color: MyColors.blackColor,
-                //                           fontSize: 12),
-                //                   softWrap: true,
-                //                 ),
-                //               ),
-                //             ),
-                //           ],
-                //         ),
-                //       );
-                //     } else if (state is AnswerError) {
-                //       return Text(
-                //         state.error,
-                //         style: CupertinoTheme.of(context)
-                //             .textTheme
-                //             .textStyle
-                //             .copyWith(color: MyColors.blackColor, fontSize: 14),
-                //         softWrap: true,
-                //       );
-                //     } else {
-                //       return const SizedBox();
-                //     }
-                //   }),
-                // ),
-                ///data/user/0/com.example.inburgering_trainer/app_flutter/recording1529929f-c4c5-40be-97b2-591ba8de92e1.m4a
-                WaveBubble(
-                  path: audioFilepath,
-                  isSender: true,
-                  appDirectory: appDirectory,
+                Padding(
+                  padding: paddingAll2,
+                  child: BlocBuilder<AnswerCubit, AnswerState>(
+                      builder: (context, state) {
+                    if (state is AnswerLoading) {
+                      return const Center(
+                        child: CupertinoActivityIndicator(),
+                      );
+                    } else if (state is AnswerLoaded) {
+                      return ConstrainedBox(
+                        constraints:
+                            BoxConstraints(maxHeight: height(context) * 0.1),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            if (state.userAnswer != null)
+                              const SizedBox(
+                                height: 5,
+                              ),
+                            Expanded(
+                              child: SingleChildScrollView(
+                                child: Text(
+                                  // "lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+                                  state.userAnswer!,
+                                  style: CupertinoTheme.of(context)
+                                      .textTheme
+                                      .textStyle
+                                      .copyWith(
+                                          color: MyColors.blackColor,
+                                          fontSize: 12),
+                                  softWrap: true,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    } else if (state is AnswerError) {
+                      return Text(
+                        state.error,
+                        style: CupertinoTheme.of(context)
+                            .textTheme
+                            .textStyle
+                            .copyWith(color: MyColors.blackColor, fontSize: 14),
+                        softWrap: true,
+                      );
+                    } else {
+                      return const SizedBox();
+                    }
+                  }),
                 ),
+
+                ///data/user/0/com.example.inburgering_trainer/app_flutter/recording1529929f-c4c5-40be-97b2-591ba8de92e1.m4a
+                // if (appDirectory != null)
+                //   WaveBubble(
+                //     path: audioFilepath,
+                //     isSender: true,
+                //     appDirectory: appDirectory!,
+                //   ),
                 Container(
                   height: 35,
                   decoration: const BoxDecoration(

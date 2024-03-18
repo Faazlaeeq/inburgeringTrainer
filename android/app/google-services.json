@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "117649696358-gvq7pt49pmq4i2jnlsfc5o4jga5e7sae.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.inburgering_trainer",
+            "certificate_hash": "d7e859a5646df119db38216d79e86ec7773dc2ce"
+          }
+        },
+        {
           "client_id": "117649696358-k5v9m4pmd06d18giujvia8o50nhlqdbl.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,6 +37,13 @@
             {
               "client_id": "117649696358-k5v9m4pmd06d18giujvia8o50nhlqdbl.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "117649696358-9ip26lm5gqrcpl1cp3gqdl5trq8pu08k.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.inburgeringTrainer"
+              }
             }
           ]
         }
