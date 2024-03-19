@@ -66,6 +66,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '117649696358',
     projectId: 'language-bc37a',
     storageBucket: 'language-bc37a.appspot.com',
+    androidClientId: '117649696358-gvq7pt49pmq4i2jnlsfc5o4jga5e7sae.apps.googleusercontent.com',
     iosClientId: '117649696358-9ip26lm5gqrcpl1cp3gqdl5trq8pu08k.apps.googleusercontent.com',
     iosBundleId: 'com.example.inburgeringTrainer',
   );
@@ -76,6 +77,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '117649696358',
     projectId: 'language-bc37a',
     storageBucket: 'language-bc37a.appspot.com',
+    androidClientId: '117649696358-gvq7pt49pmq4i2jnlsfc5o4jga5e7sae.apps.googleusercontent.com',
     iosClientId: '117649696358-h0f55jjnl7gdi3k41m31n7cct3q7j741.apps.googleusercontent.com',
     iosBundleId: 'com.example.inburgeringTrainer.RunnerTests',
   );

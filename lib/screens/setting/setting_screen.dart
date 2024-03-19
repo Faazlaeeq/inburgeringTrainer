@@ -40,12 +40,12 @@ class SettingScreen extends StatelessWidget {
                       },
                     ),
                     CupertinoDialogAction(
-                      child: const Text('Delete'),
                       isDestructiveAction: true,
                       onPressed: () {
                         // Put your delete logic here
                         Navigator.of(context).pop();
                       },
+                      child: const Text('Delete'),
                     ),
                   ],
                 ),

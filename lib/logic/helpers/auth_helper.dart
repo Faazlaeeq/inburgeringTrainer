@@ -28,6 +28,7 @@
 // import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:dio/dio.dart';
@@ -60,10 +61,13 @@ class AuthHelper {
   Future<void> post() async {
     try {
       // await logout();
-      final GoogleSignInAuthentication googleSignInAuth =
-          await signInwithoutFirebase();
-      final String? userGoogleToken = googleSignInAuth.idToken;
+      // final GoogleSignInAuthentication googleSignInAuth =
+      //     await signInwithoutFirebase();
+      // final String? userGoogleToken = googleSignInAuth.idToken;
 
+      // UserCredential userCredential = ;
+
+      final String? userGoogleToken = await signInWithGoogle();
       debugPrint("faaz: $userGoogleToken");
       Dio dio = Dio();
       var response = await dio.post(PostApi.googleSignInUrl,
@@ -119,32 +123,41 @@ class AuthHelper {
         await googleAccount!.authentication;
     return googleAuthentication;
   }
-  // Future<UserCredential> signInWithGoogle() async {
-  //   // Trigger the authentication flow
-  //   final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
-  //   // Obtain the auth details from the request
-  //   final GoogleSignInAuthentication? googleAuth =
-  //       await googleUser?.authentication;
+  Future<String?> signInWithGoogle() async {
+    GoogleSignIn googleSignIn = GoogleSignIn();
+    // GoogleSignIn googleSignIn = GoogleSignIn(
+    //   serverClientId:
+    //       "610943408715-met95o3h1120vbgf6ajp89m62g3p3i15.apps.googleusercontent.com",
+    // );
+    final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+    try {
+      final GoogleSignInAuthentication? googleAuth =
+          await googleUser?.authentication;
+      debugPrint("faaz in signInWithGoogle: ${googleAuth?.idToken}");
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth?.accessToken,
+        idToken: googleAuth?.idToken,
+      );
+      UserCredential uc =
+          await FirebaseAuth.instance.signInWithCredential(credential);
 
-  //   // Create a new credential
-  //   final credential = GoogleAuthProvider.credential(
-  //     accessToken: googleAuth?.accessToken,
-  //     idToken: googleAuth?.idToken,
-  //   );
+      debugPrint("faaz in signInWithGoogle: ${uc.user?.displayName}");
+      return uc.user?.getIdToken();
+    } catch (error) {
+      debugPrint("Error in signInWithGoogle: $error");
+      return null;
+    }
+  }
 
-  //   // Once signed in, return the UserCredential
-  //   return await FirebaseAuth.instance.signInWithCredential(credential);
-  // }
-
-  // Future<void> logout() async {
-  //   try {
-  //     await FirebaseAuth.instance.signOut();
-  //     // Reset userId in class
-  //     AuthHelper.userId = "";
-  //     debugPrint("User logged out successfully");
-  //   } catch (e) {
-  //     debugPrint(e.toString());
-  //   }
-  // }
+  Future<void> logout() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      // Reset userId in class
+      AuthHelper.userId = "";
+      debugPrint("User logged out successfully");
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
 }
