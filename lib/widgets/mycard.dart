@@ -97,9 +97,12 @@ class CardwithClick extends StatelessWidget {
         child: Stack(
           children: [
             Center(
-              child: Text(
-                widget.exerciseName,
-              ),
+              child: Text(widget.exerciseName,
+                  style:
+                      CupertinoTheme.of(context).textTheme.textStyle.copyWith(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          )),
             ),
             Positioned(
               bottom: 0,

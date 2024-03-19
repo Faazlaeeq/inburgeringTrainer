@@ -74,7 +74,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
   int? currentIndex;
   final currentPageNotifier = ValueNotifier<int>(1);
   bool showPlayer = false;
-
+  bool isPageLoaded = false;
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
@@ -102,6 +102,15 @@ class _QuestionScreenState extends State<QuestionScreen> {
         child: BlocBuilder<QuestionCubit, QuestionState>(
           builder: (context, state) {
             if (state is QuestionLoaded) {
+              if (!isPageLoaded) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  pageController.animateToPage(state.firstNotAnsweredQuestion,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeIn);
+                  isPageLoaded = true;
+                });
+              }
+
               return SafeArea(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: padding2),
@@ -267,8 +276,10 @@ class _QuestionPageWidgetState extends State<QuestionPageWidget> {
 
   @override
   void dispose() {
+    if (micCubit.state is MicActive) {
+      sh.cancelRecorder();
+    }
     micCubit.micInitial();
-
     super.dispose();
   }
 
@@ -339,35 +350,29 @@ may return non factual answers''')
                 ],
               ),
             ),
-            // ImagesInRow(
-            //   index: widget.index,
-            // ),
-            const SizedBox(
-              height: padding1,
+            ImagesInRow(
+              index: widget.index,
             ),
             ShowTextWidget(index: widget.index),
+            (widget.index == widget.currentPage)
+                ? PlayQuestionButton(index: widget.index)
+                : const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        onPressed: null,
+                        icon: ImageIcon(
+                          AssetImage('assets/icons/speak.png'),
+                          size: 72,
+                          color: MyColors.lightBlackColor,
+                        ),
+                      )
+                    ],
+                  ),
             const SizedBox(
               height: padding2,
             ),
-            // (widget.index == widget.currentPage)
-            //     ? PlayQuestionButton(index: widget.index)
-            //     : const Row(
-            //         mainAxisAlignment: MainAxisAlignment.center,
-            //         children: [
-            //           IconButton(
-            //             onPressed: null,
-            //             icon: ImageIcon(
-            //               AssetImage('assets/icons/speak.png'),
-            //               size: 72,
-            //               color: MyColors.lightBlackColor,
-            //             ),
-            //           )
-            //         ],
-            //       ),
-            // const SizedBox(
-            //   height: padding2,
-            // ),
-            // const Spacer(),
+            const Spacer(),
             BlocBuilder<AnswerCubit, AnswerState>(
               builder: (context, state) {
                 if (state is AnswerInitial) {
@@ -397,8 +402,11 @@ may return non factual answers''')
                               sh.stopRecorder();
                             }
                           },
-                          child: MicWidget(
-                            sl: sh,
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 15),
+                            child: MicWidget(
+                              sl: sh,
+                            ),
                           )),
                     ],
                   );
@@ -410,10 +418,6 @@ may return non factual answers''')
                   );
                 }
               },
-            ),
-            YourAnswerWidget(
-              index: widget.index,
-              sl: sh,
             ),
           ],
         ),

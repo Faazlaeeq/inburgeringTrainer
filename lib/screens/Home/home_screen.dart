@@ -40,17 +40,17 @@ class _HomeScreenState extends State<HomeScreen> {
           middle: const Text(
             'Inburgering Trainer',
           ),
-          leading: IconButton(
-            icon: const Icon(
-              Icons.refresh,
-              color: MyColors.greyColor,
-              size: 20,
-            ),
-            onPressed: () => setState(() {
-              RecordHelper().clearRecord();
-              HydratedBloc.storage.clear();
-            }),
-          ),
+          // leading: IconButton(
+          //   icon: const Icon(
+          //     Icons.refresh,
+          //     color: MyColors.greyColor,
+          //     size: 20,
+          //   ),
+          //   onPressed: () => setState(() {
+          //     RecordHelper().clearRecord();
+          //     HydratedBloc.storage.clear();
+          //   }),
+          // ),
           trailing: IconButton(
               onPressed: () {
                 Navigator.of(context).push(CupertinoPageRoute(
@@ -113,7 +113,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               style: CupertinoTheme.of(context)
                                   .textTheme
                                   .textStyle
-                                  .copyWith(color: MyColors.lightBlackColor),
+                                  .copyWith(
+                                      color: MyColors.lightBlackColor,
+                                      fontWeight: FontWeight.bold),
                             ),
                             const Spacer(),
                             const Icon(
@@ -122,7 +124,13 @@ class _HomeScreenState extends State<HomeScreen> {
                               color: MyColors.primaryColor,
                             ),
                             Text(
-                                "${state.activities.totalAnswered}/ ${state.activities.totalQuestions}"),
+                                "${state.activities.totalAnswered} / ${state.activities.totalQuestions}",
+                                style: CupertinoTheme.of(context)
+                                    .textTheme
+                                    .textStyle
+                                    .copyWith(
+                                        color: MyColors.lightBlackColor,
+                                        fontWeight: FontWeight.bold))
                           ],
                         ),
                         Padding(
@@ -149,7 +157,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               style: CupertinoTheme.of(context)
                                   .textTheme
                                   .textStyle
-                                  .copyWith(color: MyColors.lightBlackColor),
+                                  .copyWith(
+                                      color: MyColors.lightBlackColor,
+                                      fontWeight: FontWeight.bold),
                             ),
                             const Spacer(),
                             const Icon(
@@ -157,7 +167,13 @@ class _HomeScreenState extends State<HomeScreen> {
                               size: 20,
                               color: MyColors.primaryColor,
                             ),
-                            Text(state.lastActivity),
+                            Text(state.lastActivity,
+                                style: CupertinoTheme.of(context)
+                                    .textTheme
+                                    .textStyle
+                                    .copyWith(
+                                        color: MyColors.lightBlackColor,
+                                        fontWeight: FontWeight.bold))
                           ],
                         ),
                         Padding(
@@ -183,7 +199,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               style: CupertinoTheme.of(context)
                                   .textTheme
                                   .textStyle
-                                  .copyWith(color: MyColors.lightBlackColor),
+                                  .copyWith(
+                                      color: MyColors.lightBlackColor,
+                                      fontWeight: FontWeight.bold),
                             ),
                             const Spacer(),
                             const Icon(

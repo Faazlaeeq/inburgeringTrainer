@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:inburgering_trainer/logic/helpers/record_helper.dart';
 import 'package:inburgering_trainer/models/question_model.dart';
 import 'package:inburgering_trainer/repository/question_repository.dart';
@@ -81,19 +82,15 @@ class QuestionLoading extends QuestionState {}
 class QuestionLoaded extends QuestionState {
   final List<QuestionModel> questions;
   final String exerciseId;
+  int firstNotAnsweredQuestion = 0;
   QuestionLoaded(this.questions, {required this.exerciseId}) {
     RecordHelper recordHelper = RecordHelper();
-    questions.sort((a, b) {
-      bool aAnswered = recordHelper.getAnswerGiven(a.id);
-      bool bAnswered = recordHelper.getAnswerGiven(b.id);
-
-      if (aAnswered && !bAnswered) {
-        return 1;
-      } else if (!aAnswered && bAnswered) {
-        return -1;
-      } else {
-        return 0;
+    questions.forEachIndexedWhile((index, element) {
+      if (recordHelper.getAnswerGiven(element.id) == false) {
+        firstNotAnsweredQuestion = index;
+        return false;
       }
+      return true;
     });
   }
 }

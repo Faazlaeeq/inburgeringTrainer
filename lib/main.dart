@@ -14,7 +14,7 @@ import 'package:inburgering_trainer/logic/helpers/record_helper.dart';
 import 'package:inburgering_trainer/logic/mic_cubit.dart';
 import 'package:inburgering_trainer/logic/question_cubit.dart';
 import 'package:inburgering_trainer/repository/question_repository.dart';
-import 'package:inburgering_trainer/screens/Auth/loginscreen.dart';
+import 'package:inburgering_trainer/theme/colors.dart';
 import 'package:inburgering_trainer/theme/theme.dart';
 import 'package:inburgering_trainer/repository/exercise_repository.dart';
 import 'package:inburgering_trainer/screens/Home/home_screen.dart';
@@ -60,7 +60,10 @@ class MainApp extends StatelessWidget {
       // )
       child: MaterialApp(
         home: CupertinoApp(
-            theme: MyTheme.lightTheme(context), home: const HomeScreen()),
+            theme: MyTheme.lightTheme(context).copyWith(
+                primaryColor: MyColors.primaryColor,
+                primaryContrastingColor: MyColors.primaryColor),
+            home: const HomeScreen()),
       ),
     );
   }

@@ -25,7 +25,10 @@
 //     }
 //   }
 // }
-import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:dio/dio.dart';
 import 'package:inburgering_trainer/config/api.dart';
@@ -42,7 +45,7 @@ class AuthHelper {
     try {
       var response = await dio.post(PostApi.deleteUserUrl,
           data: {"userID": userId},
-          options: Options(headers: {'x-api-key': Api.apiKey2}));
+          options: Options(headers: {'x-api-key': Api.apiKey}));
       if (response.statusCode == 200) {
         return true;
       } else {
@@ -56,10 +59,11 @@ class AuthHelper {
 
   Future<void> post() async {
     try {
-      await logout();
-      final UserCredential userCredential = await signInWithGoogle();
+      // await logout();
+      final GoogleSignInAuthentication googleSignInAuth =
+          await signInwithoutFirebase();
+      final String? userGoogleToken = googleSignInAuth.idToken;
 
-      final String? userGoogleToken = await userCredential.user!.getIdToken();
       debugPrint("faaz: $userGoogleToken");
       Dio dio = Dio();
       var response = await dio.post(PostApi.googleSignInUrl,
@@ -78,32 +82,69 @@ class AuthHelper {
     }
   }
 
-  Future<UserCredential> signInWithGoogle() async {
-    // Trigger the authentication flow
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-
-    // Obtain the auth details from the request
-    final GoogleSignInAuthentication? googleAuth =
-        await googleUser?.authentication;
-
-    // Create a new credential
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth?.accessToken,
-      idToken: googleAuth?.idToken,
+  Future<GoogleSignInAuthentication> signInwithoutFirebase() async {
+    //Default definition
+    GoogleSignIn googleSignIn = GoogleSignIn(
+      scopes: [
+        'email',
+      ],
     );
 
-    // Once signed in, return the UserCredential
-    return await FirebaseAuth.instance.signInWithCredential(credential);
-  }
-
-  Future<void> logout() async {
-    try {
-      await FirebaseAuth.instance.signOut();
-      // Reset userId in class
-      AuthHelper.userId = "";
-      debugPrint("User logged out successfully");
-    } catch (e) {
-      debugPrint(e.toString());
+//If current device is Web or Android, do not use any parameters except from scopes.
+    if (kIsWeb || Platform.isAndroid) {
+      googleSignIn = GoogleSignIn(
+        clientId:
+            "610943408715-met95o3h1120vbgf6ajp89m62g3p3i15.apps.googleusercontent.com",
+        scopes: [
+          'email',
+        ],
+      );
     }
+
+//If current device IOS or MacOS, We have to declare clientID
+//Please, look STEP 2 for how to get Client ID for IOS
+    if (Platform.isIOS || Platform.isMacOS) {
+      googleSignIn = GoogleSignIn(
+        clientId: "YOUR_CLIENT_ID.apps.googleusercontent.com",
+        scopes: [
+          'email',
+        ],
+      );
+    }
+
+    final GoogleSignInAccount? googleAccount = await googleSignIn.signIn();
+
+//If you want further information about Google accounts, such as authentication, use this.
+    final GoogleSignInAuthentication googleAuthentication =
+        await googleAccount!.authentication;
+    return googleAuthentication;
   }
+  // Future<UserCredential> signInWithGoogle() async {
+  //   // Trigger the authentication flow
+  //   final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+  //   // Obtain the auth details from the request
+  //   final GoogleSignInAuthentication? googleAuth =
+  //       await googleUser?.authentication;
+
+  //   // Create a new credential
+  //   final credential = GoogleAuthProvider.credential(
+  //     accessToken: googleAuth?.accessToken,
+  //     idToken: googleAuth?.idToken,
+  //   );
+
+  //   // Once signed in, return the UserCredential
+  //   return await FirebaseAuth.instance.signInWithCredential(credential);
+  // }
+
+  // Future<void> logout() async {
+  //   try {
+  //     await FirebaseAuth.instance.signOut();
+  //     // Reset userId in class
+  //     AuthHelper.userId = "";
+  //     debugPrint("User logged out successfully");
+  //   } catch (e) {
+  //     debugPrint(e.toString());
+  //   }
+  // }
 }

@@ -22,7 +22,7 @@ class ActivityCubit extends Cubit<ActivityState> {
 
       emit(ActivityLoaded(activity));
       lastActivityProgress = activity.totalAnswered / activity.totalQuestions;
-      lastActivity = "${activity.totalAnswered}/${activity.totalQuestions}";
+      lastActivity = "${activity.totalAnswered} / ${activity.totalQuestions}";
     } catch (e) {
       emit(ActivityError(e.toString()));
       debugPrint(e.toString());

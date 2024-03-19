@@ -16,7 +16,7 @@ class AnswerRepository {
     };
 
     final response = await _dio.post(url,
-        options: Options(headers: {'x-api-key': Api.apiKey2}), data: data);
+        options: Options(headers: {'x-api-key': Api.apiKey}), data: data);
     if (response.statusCode == 200) {
       final responseData = response.data;
       print(responseData);

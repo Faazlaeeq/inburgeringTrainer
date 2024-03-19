@@ -4,6 +4,8 @@ import 'package:audioplayers/audioplayers.dart' as ap;
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:inburgering_trainer/logic/cubit/player_cubit.dart';
+import 'package:inburgering_trainer/theme/colors.dart';
 import 'package:inburgering_trainer/utils/imports.dart';
 
 class AudioPlayer extends StatefulWidget {
@@ -12,12 +14,12 @@ class AudioPlayer extends StatefulWidget {
 
   /// Callback when audio file should be removed
   /// Setting this to null hides the delete button
-  final VoidCallback onDelete;
+  // final VoidCallback onDelete;
 
   const AudioPlayer({
     super.key,
     required this.source,
-    required this.onDelete,
+    // required this.onDelete,
   });
 
   @override
@@ -39,6 +41,7 @@ class AudioPlayerState extends State<AudioPlayer> {
   void initState() {
     _playerStateChangedSubscription =
         _audioPlayer.onPlayerComplete.listen((state) async {
+      context.read<PlayerCubit>().stop();
       await stop();
     });
     _positionChangedSubscription = _audioPlayer.onPositionChanged.listen(
@@ -92,7 +95,7 @@ class AudioPlayerState extends State<AudioPlayer> {
                 // ),
               ],
             ),
-            Text('${_duration ?? 0.0}'),
+            // Text('${_duration ?? 0.0}'),
           ],
         );
       },
@@ -104,29 +107,32 @@ class AudioPlayerState extends State<AudioPlayer> {
     Color color;
 
     if (_audioPlayer.state == ap.PlayerState.playing) {
-      icon = const Icon(Icons.pause, color: Colors.red, size: 30);
-      color = Colors.red.withOpacity(0.1);
+      icon = const Icon(Icons.pause_rounded, color: MyColors.bgColor, size: 20);
     } else {
       final theme = Theme.of(context);
-      icon = Icon(Icons.play_arrow, color: theme.primaryColor, size: 30);
-      color = theme.primaryColor.withOpacity(0.1);
+      icon = const Icon(Icons.play_arrow_rounded,
+          color: MyColors.bgColor, size: 20);
     }
 
-    return ClipOval(
-      child: Material(
-        color: color,
-        child: InkWell(
-          child:
-              SizedBox(width: _controlSize, height: _controlSize, child: icon),
-          onTap: () {
-            if (_audioPlayer.state == ap.PlayerState.playing) {
-              pause();
-            } else {
-              play();
-            }
-          },
+    return IconButton(
+      icon: Container(
+        height: 30,
+        width: 30,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(50),
+          color: MyColors.primaryColor,
         ),
+        child: icon,
       ),
+      onPressed: () {
+        if (_audioPlayer.state == ap.PlayerState.playing) {
+          pause();
+          context.read<PlayerCubit>().stop();
+        } else {
+          play();
+          context.read<PlayerCubit>().play();
+        }
+      },
     );
   }
 

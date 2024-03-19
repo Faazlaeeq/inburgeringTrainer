@@ -4,7 +4,9 @@ import 'dart:io';
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:inburgering_trainer/logic/audio_cubit.dart';
 import 'package:inburgering_trainer/theme/colors.dart';
+import 'package:inburgering_trainer/utils/imports.dart';
 import 'package:inburgering_trainer/utils/sizes.dart';
 
 class ChatBubble extends StatelessWidget {
@@ -145,29 +147,32 @@ class _WaveBubbleState extends State<WaveBubble> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (!controller.playerState.isStopped)
-                      IconButton(
-                          onPressed: () async {
+                    IconButton(
+                        onPressed: () async {
+                          if (context.read<AudioCubit>().state
+                              is AudioPlaying) {
+                            context.read<AudioCubit>().stopAudio();
+                          }
+                          controller.playerState.isPlaying
+                              ? await controller.pausePlayer()
+                              : await controller.startPlayer(
+                                  finishMode: FinishMode.pause,
+                                );
+                        },
+                        icon: Container(
+                          padding: paddingAll1,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            color: MyColors.primaryColor,
+                          ),
+                          child: Icon(
                             controller.playerState.isPlaying
-                                ? await controller.pausePlayer()
-                                : await controller.startPlayer(
-                                    finishMode: FinishMode.loop,
-                                  );
-                          },
-                          icon: Container(
-                            padding: paddingAll1,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(50),
-                              color: MyColors.primaryColor,
-                            ),
-                            child: Icon(
-                              controller.playerState.isPlaying
-                                  ? Icons.stop_rounded
-                                  : Icons.play_arrow_rounded,
-                              color: MyColors.bgColor,
-                              size: 20,
-                            ),
-                          )),
+                                ? Icons.stop_rounded
+                                : Icons.play_arrow_rounded,
+                            color: MyColors.bgColor,
+                            size: 20,
+                          ),
+                        )),
                     AudioFileWaveforms(
                       size: Size(MediaQuery.of(context).size.width / 1.5, 70),
                       playerController: controller,

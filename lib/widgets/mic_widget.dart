@@ -60,18 +60,15 @@ class _MicWidgetState extends State<MicWidget> {
 
         if (state is MicInactive) {
           return Container(
-            height: 100,
-            width: 100,
-            padding: const EdgeInsets.all(30),
-            decoration: BoxDecoration(
-                color: MyColors.primaryColor,
-                borderRadius: BorderRadius.circular(50)),
-            child: const ImageIcon(
-              AssetImage("assets/icons/micicon.png"),
-              size: 50,
-              color: MyColors.whiteColor,
-            ),
-          );
+              height: 100,
+              width: 100,
+              padding: const EdgeInsets.all(30),
+              decoration: BoxDecoration(
+                  color: MyColors.primaryColor,
+                  borderRadius: BorderRadius.circular(50)),
+              child: const CupertinoActivityIndicator(
+                color: MyColors.bgColor,
+              ));
         }
         if (state is MicError) {
           return Container(

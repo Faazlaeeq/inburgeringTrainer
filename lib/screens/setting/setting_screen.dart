@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:inburgering_trainer/theme/colors.dart';
 import 'package:inburgering_trainer/utils/imports.dart';
 
 class SettingScreen extends StatelessWidget {
@@ -32,7 +33,8 @@ class SettingScreen extends StatelessWidget {
                       const Text('Are you sure you want to delete this user?'),
                   actions: <CupertinoDialogAction>[
                     CupertinoDialogAction(
-                      child: const Text('Cancel'),
+                      child: const Text('Cancel',
+                          style: TextStyle(color: MyColors.primaryColor)),
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
@@ -67,7 +69,8 @@ class SettingScreen extends StatelessWidget {
                           'This App helps in learning Dutch language to students.'),
                       actions: <CupertinoDialogAction>[
                         CupertinoDialogAction(
-                          child: const Text('Close'),
+                          child: const Text('Close',
+                              style: TextStyle(color: MyColors.primaryColor)),
                           onPressed: () {
                             Navigator.of(context).pop();
                           },

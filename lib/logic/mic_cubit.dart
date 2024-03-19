@@ -26,7 +26,7 @@ class MicCubit extends Cubit<MicState> {
       final data = {
         'audio': base64Audio,
         'service': 'google',
-        'code': 'en',
+        'code': 'nl',
         'userID': AuthHelper.userId
       };
       debugPrint('faaz: data from micInactive : $data');
@@ -34,10 +34,11 @@ class MicCubit extends Cubit<MicState> {
       var response = await Dio().post(
         PostApi.sendTranscriptUrl,
         data: data,
-        options: Options(headers: {'x-api-key': Api.apiKey2}),
+        options: Options(headers: {'x-api-key': Api.apiKey}),
       );
 
       debugPrint('faaz: response from sendTranscriptUrl : $response');
+      emit(MicText(text: response.data['transcript'], path: path));
     } catch (e) {
       debugPrint('faaz: error from micInactive : $e');
     }

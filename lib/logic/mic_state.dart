@@ -12,6 +12,12 @@ class MicInactive extends MicState {
   MicInactive({required this.path});
 }
 
+class MicText extends MicState {
+  final String text;
+  final String path;
+  MicText({required this.text, required this.path});
+}
+
 class MicError extends MicState {
   final String error;
   MicError({required this.error});

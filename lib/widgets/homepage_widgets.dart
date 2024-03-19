@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:inburgering_trainer/logic/audio_cubit.dart';
 import 'package:inburgering_trainer/logic/bloc/speech_bloc.dart';
 import 'package:inburgering_trainer/logic/cubit/answer_cubit.dart';
+import 'package:inburgering_trainer/logic/mic_cubit.dart';
 import 'package:inburgering_trainer/logic/question_cubit.dart';
 import 'package:inburgering_trainer/theme/colors.dart';
 import 'package:inburgering_trainer/utils/imports.dart';
@@ -159,7 +160,13 @@ class _PlayQuestionButtonState extends State<PlayQuestionButton> {
                       color: MyColors.blackLightColor,
                     );
                   } else {
-                    icon = const SizedBox();
+                    icon = widget.isQuestion
+                        ? const SizedBox()
+                        : ImageIcon(
+                            const AssetImage('assets/icons/speak.png'),
+                            size: widget.iconSize,
+                            color: MyColors.blackLightColor,
+                          );
                   }
                   return IconButton(
                     onPressed: () {
@@ -271,56 +278,36 @@ class ImagesInRow extends StatelessWidget {
     return BlocBuilder<QuestionCubit, QuestionState>(
       builder: (context, state) {
         return Container(
-          padding: paddingSymmetricVertical3,
+          padding: paddingSymmetricVertical2,
           width: width(context),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (state is QuestionLoaded) ...[
-                BlocListener<SpeechBloc, SpeechState>(
+                BlocListener<MicCubit, MicState>(
                   listener: (context, answerState) {
-                    if (answerState is SpeechUpdated) {
+                    if (answerState is MicText) {
                       context.read<AnswerCubit>().postAnswer(
                           state.questions[index].questionData.questionText,
-                          answerState.speech,
+                          answerState.text,
                           "63d97bb2-5678-47a2-8ebc-b1f84b27e5d6",
                           state.exerciseId,
-                          state.questions[index].id);
+                          state.questions[index].id,
+                          answerState.path);
                     }
                   },
                   child: const SizedBox(),
                 ),
                 Container(
-                  height: 130,
+                  height: height(context) / 6,
                   padding: paddingAll0,
-                  margin: paddingSymmetricHorizontal1,
-                  width: width(context) / 2.3,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: CachedNetworkImage(
-                    imageUrl: state.questions[index].questionData.imageURLs[0],
-                    placeholder: (context, url) =>
-                        const CupertinoActivityIndicator(),
-                    errorWidget: (context, url, error) => const Row(
-                      children: [Icon(Icons.error), Text(" Can't load Image")],
-                    ),
-                    fit: BoxFit.cover,
-                    key: UniqueKey(),
-                  ),
-                ),
-                if (state.questions[index].questionData.imageURLs.length > 1)
-                  Container(
-                    height: 130,
-                    padding: paddingAll0,
-                    margin: paddingSymmetricHorizontal1,
-                    width: width(context) / 2.3,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+                  margin: paddingSymmetricHorizontal3,
+                  width: width(context) / 2.7,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
                     child: CachedNetworkImage(
                       imageUrl:
-                          state.questions[index].questionData.imageURLs[1],
+                          state.questions[index].questionData.imageURLs[0],
                       placeholder: (context, url) =>
                           const CupertinoActivityIndicator(),
                       errorWidget: (context, url, error) => const Row(
@@ -331,6 +318,35 @@ class ImagesInRow extends StatelessWidget {
                       ),
                       fit: BoxFit.cover,
                       key: UniqueKey(),
+                      maxWidthDiskCache: 1000,
+                      maxHeightDiskCache: 1000,
+                    ),
+                  ),
+                ),
+                if (state.questions[index].questionData.imageURLs.length > 1)
+                  Container(
+                    height: height(context) / 6,
+                    padding: paddingAll0,
+                    margin: paddingSymmetricHorizontal3,
+                    width: width(context) / 2.7,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: CachedNetworkImage(
+                        imageUrl:
+                            state.questions[index].questionData.imageURLs[1],
+                        placeholder: (context, url) =>
+                            const CupertinoActivityIndicator(),
+                        errorWidget: (context, url, error) => const Row(
+                          children: [
+                            Icon(Icons.error),
+                            Text(" Can't load Image")
+                          ],
+                        ),
+                        fit: BoxFit.cover,
+                        key: UniqueKey(),
+                        maxWidthDiskCache: 1000,
+                        maxHeightDiskCache: 1000,
+                      ),
                     ),
                   )
               ],

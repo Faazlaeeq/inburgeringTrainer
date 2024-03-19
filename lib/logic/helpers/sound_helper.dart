@@ -22,7 +22,6 @@ class SoundHelper {
   StreamSubscription<RecordState>? _recordSub;
   RecordState _recordState = RecordState.stop;
   StreamSubscription<Amplitude>? _amplitudeSub;
-  Amplitude? _amplitude;
 
   SoundHelper({required this.questionId, required this.micCubit}) {
     init();
@@ -55,7 +54,7 @@ class SoundHelper {
         .onAmplitudeChanged(const Duration(milliseconds: 1000))
         .listen((amp) {
       debugPrint("faaz: amplitude: ${amp.current}");
-      if (amp.current < -35) {
+      if (amp.current < -30) {
         debugPrint("faaz: silence detected");
         silenceStart ??= DateTime.now();
         if (DateTime.now().difference(silenceStart!) >
@@ -111,6 +110,10 @@ class SoundHelper {
       dir!.path,
       'audio_${DateTime.now().millisecondsSinceEpoch}.m4a',
     );
+  }
+
+  Future<void> cancelRecorder() async {
+    await _audioRecorder.stop();
   }
 
   Future<void> stopRecorder() async {
