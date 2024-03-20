@@ -24,7 +24,7 @@ dependencies:
   # skeletonizer: ^1.0.1
   speech_to_text: ^6.6.0
   uuid: ^3.0.7
-  # flutter_sound: any
+  flutter_sound: any
   record: ^5.0.4
   audio_waveforms: ^1.0.4
   # mockito: ^5.4.4
