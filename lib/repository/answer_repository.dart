@@ -2,6 +2,7 @@
 import 'package:dio/dio.dart';
 
 import 'package:inburgering_trainer/config/api.dart';
+import 'package:flutter/foundation.dart';
 
 class AnswerRepository {
   final Dio _dio = Dio();
@@ -19,7 +20,7 @@ class AnswerRepository {
         options: Options(headers: {'x-api-key': Api.apiKey}), data: data);
     if (response.statusCode == 200) {
       final responseData = response.data;
-      print(responseData);
+      debugPrint(responseData);
       return {
         'correction': responseData['correction'],
         'input': responseData['input'],
@@ -29,9 +30,9 @@ class AnswerRepository {
     }
   }
 
-  Future<String> getTranscript(String base64Audio) {
-    final response = _dio.post(PostApi.sendTranscript,
-        options: Options(headers: {'x-api-key': Api.apiKey}), data: {});
-    return Future.value("transcript");
-  }
+  // Future<String> getTranscript(String base64Audio) {
+  //   final response = _dio.post(PostApi.sendTranscript,
+  //       options: Options(headers: {'x-api-key': Api.apiKey}), data: {});
+  //   return Future.value("transcript");
+  // }
 }

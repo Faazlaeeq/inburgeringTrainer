@@ -104,12 +104,12 @@ class AudioPlayerState extends State<AudioPlayer> {
 
   Widget _buildControl() {
     Icon icon;
-    Color color;
+    // Color color;
 
     if (_audioPlayer.state == ap.PlayerState.playing) {
       icon = const Icon(Icons.pause_rounded, color: MyColors.bgColor, size: 20);
     } else {
-      final theme = Theme.of(context);
+      // final theme = Theme.of(context);
       icon = const Icon(Icons.play_arrow_rounded,
           color: MyColors.bgColor, size: 20);
     }

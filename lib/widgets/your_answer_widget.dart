@@ -2,13 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:inburgering_trainer/logic/audio_cubit.dart';
-import 'package:inburgering_trainer/logic/audio_player.dart';
-import 'package:inburgering_trainer/logic/bloc/speech_bloc.dart';
 import 'package:inburgering_trainer/logic/cubit/answer_cubit.dart';
 import 'package:inburgering_trainer/logic/cubit/player_cubit.dart';
 import 'package:inburgering_trainer/logic/helpers/sound_helper.dart';
-import 'package:inburgering_trainer/logic/helpers/speech_listener.dart';
-import 'package:inburgering_trainer/logic/helpers/tts_helper.dart';
 import 'package:inburgering_trainer/logic/mic_cubit.dart';
 import 'package:inburgering_trainer/logic/question_cubit.dart';
 import 'package:inburgering_trainer/screens/Home/chat_bubble.dart';
@@ -17,7 +13,6 @@ import 'package:inburgering_trainer/utils/imports.dart';
 import 'package:inburgering_trainer/utils/sizes.dart';
 import 'package:inburgering_trainer/widgets/homepage_widgets.dart';
 import 'package:inburgering_trainer/widgets/modal_from_bottom.dart';
-import 'package:lottie/lottie.dart';
 import 'package:path_provider/path_provider.dart';
 
 class YourAnswerWidget extends StatefulWidget {
@@ -40,8 +35,8 @@ class _YourAnswerWidgetState extends State<YourAnswerWidget> {
       "/storage/emulated/0/Android/data/com.example.inburgering_trainer/files/audio_1710755792262.m4a";
   @override
   Widget build(BuildContext context) {
-    String path =
-        "/storage/emulated/0/Android/data/com.example.inburgering_trainer/files/audio_1710755792262.m4a";
+    // String path =
+    //     "/storage/emulated/0/Android/data/com.example.inburgering_trainer/files/audio_1710755792262.m4a";
     return SingleChildScrollView(
       child: ListView(
         shrinkWrap: true,
