@@ -32,6 +32,7 @@ class SoundHelper {
   }
 
   void init() async {
+    debugPrint("faaz: init sound helper, requested permission");
     var status = await Permission.microphone.request();
     if (status != PermissionStatus.granted) {
       throw RecordingPermissionException('Microphone permission not granted');
